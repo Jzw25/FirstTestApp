@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.myapplication.activity.TestSheJiActivity;
 import com.example.myapplication.bean.SuccessBean;
 import com.example.myapplication.databinding.ActivityMainBinding;
 import com.example.myapplication.media.MediaActivity;
@@ -64,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
     private Button button,button2,button3,button4,button5,button6,btn_sound,btn_linkedlist,
-            btn_annular,btn_task,btn_add,btn_nbl;
+            btn_annular,btn_task,btn_add,btn_nbl,btn_goto;
 
     private ImageView iv;
 
@@ -92,7 +93,12 @@ public class MainActivity extends AppCompatActivity {
         btn_task = mainBinding.btnTask;
         btn_add = mainBinding.btnAdd;
         btn_nbl = mainBinding.btnNbl;
+        btn_goto = mainBinding.btnGoto;
         iv = findViewById(R.id.iv);
+
+        btn_goto.setOnClickListener(v -> {
+            startActivity(new Intent(this, TestSheJiActivity.class));
+        });
 
         btn_nbl.setOnClickListener(v -> {
             //中缀表达式转逆波兰表达式（后缀表达式）
@@ -136,11 +142,24 @@ public class MainActivity extends AppCompatActivity {
                 }else {
                     //为数字
                     sb.append(count);
+                    if(i==center.length()-1){
+                        resultTask.add(sb.toString());
+                        sb.setLength(0);
+                    }
                 }
             }
 
-            resultTask.showAll();
-
+            //最后将符号栈全入结果栈
+            while (!fhbTask.isEmpty()){
+                resultTask.add(fhbTask.del());
+            }
+//            resultTask.showAll();
+            //反向输出，为最终结果
+            StringTask stringTask = new StringTask(60);
+            while (!resultTask.isEmpty()){
+                stringTask.add(resultTask.del());
+            }
+            stringTask.showAll();
         });
 
         btn_add.setOnClickListener(v -> {
@@ -190,6 +209,10 @@ public class MainActivity extends AppCompatActivity {
                 }else {
                     //为数字
                     keepNum.append(count);
+                    if(i==s.length()-1){
+                        testTask.add(Integer.parseInt(keepNum.toString()));
+                        keepNum.setLength(0);
+                    }
                 }
             }
 

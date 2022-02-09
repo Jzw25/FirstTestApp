@@ -1,5 +1,7 @@
 package com.example.myapplication;
 
+import com.example.myapplication.shejimoshi.CompositePatternTest;
+
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -13,5 +15,7 @@ public class ExampleUnitTest {
     @Test
     public void addition_isCorrect() {
         assertEquals(4, 2 + 2);
+        CompositePatternTest test = new CompositePatternTest();
+        test.tryTest();
     }
 }
