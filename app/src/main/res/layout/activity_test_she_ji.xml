@@ -24,6 +24,12 @@
             android:layout_height="wrap_content"
             android:text="digui"/>
 
+        <Button
+            android:id="@+id/btn_Eight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Eight"/>
+
     </LinearLayout>
 
 </LinearLayout>
