@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.example.myapplication.R;
+import com.example.myapplication.algorithm.EightQueen;
 import com.example.myapplication.algorithm.RecursionTest;
 import com.example.myapplication.databinding.ActivityTestSheJiBinding;
 import com.example.myapplication.shejimoshi.FactoryTest;
@@ -30,6 +31,7 @@ public class TestSheJiActivity extends AppCompatActivity implements View.OnClick
     private void initAction() {
         btn_factory.setOnClickListener(this::onClick);
         btn_digui.setOnClickListener(this::onClick);
+        binding.btnEight.setOnClickListener(this::onClick);
     }
 
     private void initView() {
@@ -51,6 +53,9 @@ public class TestSheJiActivity extends AppCompatActivity implements View.OnClick
                     Log.d(TAG, "onClick: "+ints[i][j]);
                 }
             }
+        }else if (clickId==binding.btnEight.getId()){
+            EightQueen queen = new EightQueen(8);
+            queen.check(0);
         }
     }
 }
