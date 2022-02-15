@@ -1,5 +1,11 @@
 package com.example.myapplication.javatest;
 
+import androidx.annotation.FloatRange;
+import androidx.annotation.IntDef;
+import androidx.annotation.StringDef;
+
+import com.example.myapplication.bean.AnnotationTestBean;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
@@ -26,7 +32,7 @@ public @interface MyAnnotationTest {
 
     /**
      * 注解元素的默认值：
-     *注解元素必须有确定的值，要么在定义注解的默认值中指定，要么在使用注解时指定，非基本类型的注解元素的值不可为
+     * **注解元素必须有确定的值，要么在定义注解的默认值中指定，要么在使用注解时指定**，非基本类型的注解元素的值不可为
      * null。因此, 使用空字符串或0作为默认值是一种常用的做法。这个约束使得处理器很难表现一个元素的存在或缺失的
      * 状态，因为每个注解的声明中，所有元素都存在，并且都具有相应的值，为了绕开这个约束，我们只能定义一些特殊的
      * 值，例如空字符串或者负数，一次表示某个元素不存在，在定义注解时，这已经成为一个习惯用法。
@@ -62,6 +68,25 @@ public @interface MyAnnotationTest {
     @interface MethodTest{
         String value() default "no vaule";
     }
+
+    /**
+     * 利用自定义注解实现语法检查
+     * 即利用Androidx提供的IntDef,定义赋值的范围
+     */
+
+    @IntDef({AnnotationTestBean.IDEA_METHOD,AnnotationTestBean.ANDROID_METHOD,AnnotationTestBean.KOTLIN_METHOD})
+    @Retention(RetentionPolicy.SOURCE)
+    @Target({ElementType.FIELD,ElementType.PARAMETER})
+    @interface MethodCheck{
+
+    }
+
+    @StringDef({AnnotationTestBean.MY_WAY,AnnotationTestBean.HER_WAY,AnnotationTestBean.YOUR_WAY})
+    @Retention(RetentionPolicy.SOURCE)
+    @Target({ElementType.FIELD,ElementType.PARAMETER})
+    @interface CheckMyWayCheck{
+
+    }
 }
 /**
  * Target类型	描述
@@ -76,7 +101,7 @@ public @interface MyAnnotationTest {
  * ElementType.TYPE_PARAMETER	1.8版本新增，应用于类型变量）
  * ElementType.TYPE_USE	1.8版本新增，应用于任何使用类型的语句中（例如声明语句、泛型和强制转换语句中的类型）
  *
- * 不写的话，好像默认各个位置都是可以的
+ * 不写的话，默认各个位置都是可以的
  *
  * ————————————————
  * 生命周期类型	描述

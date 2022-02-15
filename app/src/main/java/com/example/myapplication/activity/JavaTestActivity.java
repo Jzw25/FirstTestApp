@@ -72,6 +72,15 @@ public class JavaTestActivity extends AppCompatActivity implements View.OnClickL
                     e.printStackTrace();
                 }
 
+                /**
+                 * 注解检测语法
+                 */
+//                bean.method(000);//会出现划红线提示
+                bean.method(AnnotationTestBean.ANDROID_METHOD);
+
+//                bean.method("asdasd");
+                bean.method(AnnotationTestBean.MY_WAY);
+
             }else {
                 Log.d(TAG, "MyAnnotationTest: the bean do not have the AnnotationTest");
             }
