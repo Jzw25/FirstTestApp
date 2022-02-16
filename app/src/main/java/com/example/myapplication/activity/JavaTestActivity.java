@@ -11,9 +11,12 @@ import com.example.myapplication.bean.AnnotationTestBean;
 import com.example.myapplication.databinding.ActivityJavaTestBinding;
 import com.example.myapplication.databinding.ActivityTestSheJiBinding;
 import com.example.myapplication.javatest.MyAnnotationTest;
+import com.jzw.testserviceloaderinterface.TestInterface;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Iterator;
+import java.util.ServiceLoader;
 
 public class JavaTestActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -30,6 +33,7 @@ public class JavaTestActivity extends AppCompatActivity implements View.OnClickL
 
     private void initAction() {
         binding.btnZj.setOnClickListener(this::onClick);
+        binding.btnSpi.setOnClickListener(this::onClick);
     }
 
     @Override
@@ -67,7 +71,7 @@ public class JavaTestActivity extends AppCompatActivity implements View.OnClickL
                 try {
                     Method method = aClass.getMethod("method");
                     MyAnnotationTest.MethodTest annotation1 = method.getAnnotation(MyAnnotationTest.MethodTest.class);
-                    Log.d(TAG, "method: the annotation value is "+annotation1.value());
+                    Log.d(TAG, "method: the annotation value is " + annotation1.value());
                 } catch (NoSuchMethodException e) {
                     e.printStackTrace();
                 }
@@ -81,10 +85,23 @@ public class JavaTestActivity extends AppCompatActivity implements View.OnClickL
 //                bean.method("asdasd");
                 bean.method(AnnotationTestBean.MY_WAY);
 
-            }else {
+            } else {
                 Log.d(TAG, "MyAnnotationTest: the bean do not have the AnnotationTest");
             }
 
+        } else if (id == binding.btnSpi.getId()) {
+            /**
+             * 通过Java的SPI机制也有一点缺点就是在运行时通过反射加载类实例，这个对性能会有点影响。但是瑕不掩瑜，
+             * SPI机制可以实现不同模块之间方便的面向接口编程，拒绝了硬编码的方式，解耦效果很好。用起来也简单，
+             * 只需要在目录META-INF/services中配置实现类就行。源码中也用来了懒加载的思想，开发中可以借鉴。
+             */
+            ServiceLoader<TestInterface> serviceLoader = ServiceLoader.load(TestInterface.class);
+            Iterator iterator = serviceLoader.iterator();
+            while (iterator.hasNext()) {
+                TestInterface next = (TestInterface) iterator.next();
+                next.dispaly();
+                Log.d(TAG, "spi: " + next.dispaly());
+            }
         }
     }
 }

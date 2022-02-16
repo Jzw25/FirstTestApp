@@ -73,4 +73,8 @@ dependencies {
 
     // optional - Paging 3 Integration
     implementation "androidx.room:room-paging:2.4.0-rc01"
+
+    annotationProcessor project(":Compiler")
+    implementation project(path: ':Annotation')
+    implementation project(":TestServiceLoaderInterface")
 }

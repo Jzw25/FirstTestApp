@@ -72,6 +72,7 @@ public @interface MyAnnotationTest {
     /**
      * 利用自定义注解实现语法检查
      * 即利用Androidx提供的IntDef,定义赋值的范围
+     * 因枚举类型占内存，故使用注解方式优化
      */
 
     @IntDef({AnnotationTestBean.IDEA_METHOD,AnnotationTestBean.ANDROID_METHOD,AnnotationTestBean.KOTLIN_METHOD})
@@ -86,6 +87,16 @@ public @interface MyAnnotationTest {
     @Target({ElementType.FIELD,ElementType.PARAMETER})
     @interface CheckMyWayCheck{
 
+    }
+
+    /**
+     * **APT执行于javac编译之前，将其打成javac，而反射则执行与运行时，相比反射APT效率更高**
+     */
+    @Target({ElementType.TYPE,ElementType.METHOD})
+    @Retention(RetentionPolicy.SOURCE)
+    @Inherited
+    @interface MyRouter{
+        String value() default "";
     }
 }
 /**

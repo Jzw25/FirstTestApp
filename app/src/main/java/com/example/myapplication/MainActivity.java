@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.example.myapplication.activity.JavaTestActivity;
 import com.example.myapplication.activity.TestSheJiActivity;
 import com.example.myapplication.bean.SuccessBean;
 import com.example.myapplication.databinding.ActivityMainBinding;
@@ -95,6 +96,10 @@ public class MainActivity extends AppCompatActivity {
         btn_nbl = mainBinding.btnNbl;
         btn_goto = mainBinding.btnGoto;
         iv = findViewById(R.id.iv);
+
+        mainBinding.btnJava.setOnClickListener(v -> {
+            startActivity(new Intent(this, JavaTestActivity.class));
+        });
 
         btn_goto.setOnClickListener(v -> {
             startActivity(new Intent(this, TestSheJiActivity.class));
