@@ -4,12 +4,14 @@ import android.util.Log;
 
 import com.example.myapplication.bean.ReflectBean;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 
 /**
  * 反射测试
- * https://blog.csdn.net/sjh66655/article/details/110467429?utm_medium=distribute.pc_aggpage_search_result.none-task-blog-2~aggregatepage~first_rank_ecpm_v1~rank_v31_ecpm-1-110467429.pc_agg_new_rank&utm_term=Java+apt+%E4%BD%BF%E7%94%A8&spm=1000.2123.3001.4430
  */
 public class ReflectTest {
 
@@ -102,9 +104,61 @@ public class ReflectTest {
 
     /**
      * 通过反射获取成员变量
+     * 1.批量的
+     * 		1).Field[] getFields():获取所有的"公有字段"
+     * 		2).Field[] getDeclaredFields():获取所有字段，包括：私有、受保护、默认、公有；
+     * 2.获取单个的：
+     * 		1).public Field getField(String fieldName):获取某个"公有的"字段；
+     * 		2).public Field getDeclaredField(String fieldName):获取某个字段(可以是私有的)
+     *
+     * 	 设置字段的值：
+     * 		Field --> public void set(Object obj,Object value):
+     * 					参数说明：
+     * 					1.obj:要设置的字段所在的对象；
+     * 					2.value:要为字段设置的值；
      */
     private void getFiled(){
-
+        try {
+            //获取class对象
+            Class<?> aClass = Class.forName("com.example.myapplication.bean.ReflectBean");
+            //获取所有公有字段
+            Field[] fields = aClass.getFields();
+            for (Field field : fields){
+                Log.d(TAG, "fields: " + field);
+            }
+            //获取所有的字段(包括私有、受保护、默认的)
+            Field[] declaredFields = aClass.getDeclaredFields();
+            for (Field field : declaredFields){
+                Log.d(TAG, "declaredFields: " + field);
+            }
+            //获取公有字段age并调用
+            Field age = aClass.getField("age");
+            Log.d(TAG, "age: " + age);
+            //产生Student对象--》Student stu = new Student();
+            Object o = aClass.getConstructor().newInstance();
+            //为字段设置值
+            age.set(o,20);//为Student对象中的name属性赋值--》stu.name = "刘德华"
+            ReflectBean bean = (ReflectBean) o;
+            Log.d(TAG, "ReflectBean.age: "+bean.age);
+            //获取私有字段name并调用
+            Field name = aClass.getDeclaredField("name");
+            Log.d(TAG, "name: " + name);
+            name.setAccessible(true);
+            name.set(o,"zhangsan");
+            Log.d(TAG, "ReflectBean.name: " + bean.getName());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -129,6 +183,75 @@ public class ReflectTest {
      * 它的返回值是T类型，所以newInstance是创建了一个构造方法的声明类的新实例对象。并为之调用
      */
     private void getGouZao(){
+        //加载class对象
+        try {
+            Class<?> forName = Class.forName("com.example.myapplication.bean.ReflectBean");
+            //获取所有公有构造方法
+            Constructor<?>[] constructors = forName.getConstructors();
+            for (Constructor constructor : constructors){
+                Log.d(TAG, "constructors: "+constructor);
+            }
+            //获取所有的构造方法，(包括：私有、受保护、默认、公有)
+            Constructor<?>[] declaredConstructors = forName.getDeclaredConstructors();
+            for (Constructor constructor : declaredConstructors){
+                Log.d(TAG, "declaredConstructors: " + constructor);
+            }
+            //获取公有无参构造方法
+            //1>、因为是无参的构造方法所以类型是一个null,不写也可以：这里需要的是一个参数的类型，切记是类型
+            //2>、返回的是描述这个无参构造函数的类对象。
+            Constructor<?> constructor = forName.getConstructor(null);
+            Log.d(TAG, "getConstructor: "+constructor);
+            //调用构造方法
+            constructor.newInstance();
+            //获取私有构造方法，并调用
+            Constructor<?> declaredConstructor = forName.getDeclaredConstructor(int.class);
+            Log.d(TAG, "declaredConstructor: "+declaredConstructor);
+            //暴力访问(忽略掉访问修饰符)
+            declaredConstructor.setAccessible(true);
+            declaredConstructor.newInstance(25);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 反射方法的其它使用之—通过反射越过泛型检查
+     * 泛型用在编译期，编译过后泛型擦除（消失掉）。所以是可以通过反射越过泛型检查的
+     */
+    public void fanxingjiancha(){
+        ArrayList<String> list = new ArrayList<>();
+        list.add("zs");
+        list.add("ls");
+
+        Class<? extends ArrayList> listClass = list.getClass();
+        try {
+            Method add = listClass.getMethod("add", Object.class);
+            add.invoke(list,100);
+
+            for (Object o : list){
+                Log.d(TAG, "fanxingjiancha: " + o);
+            }
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
 
     }
+
+    /**
+     * https://blog.csdn.net/sjh66655/article/details/110467429?utm_medium=distribute.pc_aggpage_
+     * search_result.none-task-blog-2~aggregatepage~first_rank_ecpm_v1~rank_v31_ecpm-1-110467429.
+     * pc_agg_new_rank&utm_term=Java+apt+%E4%BD%BF%E7%94%A8&spm=1000.2123.3001.4430
+     */
 }

@@ -16,6 +16,18 @@ public class ReflectBean {
         this.age = age;
     }
 
+    public ReflectBean(String name) {
+        this.name = name;
+    }
+
+    public ReflectBean(){
+
+    }
+
+    private ReflectBean(int age){
+
+    }
+
     public String getName() {
         return name;
     }
