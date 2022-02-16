@@ -8,3 +8,8 @@ dependencyResolutionManagement {
 }
 rootProject.name = "My Application"
 include ':app'
+include ':Annotation'//自定义注解模块
+include ':Compiler'//注解处理器模块
+include ':TestServiceLoaderA'
+include ':TestServiceLoaderB'
+include ':TestServiceLoaderInterface'

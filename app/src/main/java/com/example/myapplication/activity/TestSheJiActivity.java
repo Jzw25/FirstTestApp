@@ -7,12 +7,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-import com.example.myapplication.R;
 import com.example.myapplication.algorithm.EightQueen;
 import com.example.myapplication.algorithm.RecursionTest;
 import com.example.myapplication.databinding.ActivityTestSheJiBinding;
 import com.example.myapplication.shejimoshi.FactoryTest;
-
+import com.jzw.annotation.MyRouterTest;
+@MyRouterTest
 public class TestSheJiActivity extends AppCompatActivity implements View.OnClickListener {
     private ActivityTestSheJiBinding binding;
     private Button btn_factory,btn_digui;

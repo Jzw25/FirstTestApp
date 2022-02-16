@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <bytecodeTargetLevel target="11" />
+    <bytecodeTargetLevel target="1.7">
+      <module name="My_Application.app" target="11" />
+      <module name="My_Application.TestServiceLoaderA" target="11" />
+      <module name="My_Application.TestServiceLoaderB" target="11" />
+      <module name="My_Application.TestServiceLoaderInterface" target="11" />
+    </bytecodeTargetLevel>
   </component>
 </project>

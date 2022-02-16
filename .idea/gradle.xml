@@ -11,6 +11,11 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/Annotation" />
+            <option value="$PROJECT_DIR$/Compiler" />
+            <option value="$PROJECT_DIR$/TestServiceLoaderA" />
+            <option value="$PROJECT_DIR$/TestServiceLoaderB" />
+            <option value="$PROJECT_DIR$/TestServiceLoaderInterface" />
             <option value="$PROJECT_DIR$/app" />
           </set>
         </option>

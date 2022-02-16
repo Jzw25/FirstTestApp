@@ -97,6 +97,8 @@ public class GenericityTest {
      * 如在代码中定义的List<object>和List<String>等类型，在编译后都会编程List。JVM看到的只是List，而由泛型附
      * 加的类型信息对JVM来说是不可见的。Java编译器会在编译时尽可能的发现可能出错的地方，但是仍然无法避免在运行时
      * 刻出现类型转换异常的情况。类型擦除也是Java的泛型实现方法与C++模版机制实现方式之间的重要区别。
+     *
+     * **可以通过反射越过泛型检查，即通过反射获取LIST<string>的对象可将int类型的参数添加到
      */
     public void showList(){
         ArrayList<String> arrayList = new ArrayList<>();
