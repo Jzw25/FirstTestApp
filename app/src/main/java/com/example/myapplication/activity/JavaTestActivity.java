@@ -10,6 +10,7 @@ import com.example.myapplication.R;
 import com.example.myapplication.bean.AnnotationTestBean;
 import com.example.myapplication.databinding.ActivityJavaTestBinding;
 import com.example.myapplication.databinding.ActivityTestSheJiBinding;
+import com.example.myapplication.javatest.HookTets;
 import com.example.myapplication.javatest.MyAnnotationTest;
 import com.jzw.testserviceloaderinterface.TestInterface;
 
@@ -34,6 +35,7 @@ public class JavaTestActivity extends AppCompatActivity implements View.OnClickL
     private void initAction() {
         binding.btnZj.setOnClickListener(this::onClick);
         binding.btnSpi.setOnClickListener(this::onClick);
+        binding.btnHook.setOnClickListener(this::onClick);
     }
 
     @Override
@@ -102,6 +104,14 @@ public class JavaTestActivity extends AppCompatActivity implements View.OnClickL
                 next.dispaly();
                 Log.d(TAG, "spi: " + next.dispaly());
             }
+        }else if(id==binding.btnHook.getId()){
+            HookTets hookTets = new HookTets();
+//            hookTets.tryTest();
+//            hookTets.tryTets1();
+//            hookTets.tryTest2();
+//            hookTets.tryTest3();
+//            hookTets.tryTest4();
+            hookTets.tryProxyTest();
         }
     }
 }

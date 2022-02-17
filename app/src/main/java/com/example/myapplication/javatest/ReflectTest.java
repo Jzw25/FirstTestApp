@@ -134,10 +134,10 @@ public class ReflectTest {
             //获取公有字段age并调用
             Field age = aClass.getField("age");
             Log.d(TAG, "age: " + age);
-            //产生Student对象--》Student stu = new Student();
+            //产生Student对象--》ReflectBean stu = new ReflectBean();
             Object o = aClass.getConstructor().newInstance();
             //为字段设置值
-            age.set(o,20);//为Student对象中的name属性赋值--》stu.name = "刘德华"
+            age.set(o,20);//为ReflectBean对象中的age属性赋值--》stu.age = "刘德华"
             ReflectBean bean = (ReflectBean) o;
             Log.d(TAG, "ReflectBean.age: "+bean.age);
             //获取私有字段name并调用
@@ -195,6 +195,14 @@ public class ReflectTest {
             Constructor<?>[] declaredConstructors = forName.getDeclaredConstructors();
             for (Constructor constructor : declaredConstructors){
                 Log.d(TAG, "declaredConstructors: " + constructor);
+                //某个构造函数的参
+                Class[] parameterTypes = constructor.getParameterTypes();
+                //看看构造函数参数的长度
+                Log.d(TAG, "parameterTypes: the longer is " + parameterTypes.length);
+                for (Class c : parameterTypes){
+                    //看看这个构造函数是什么类型
+                    Log.d(TAG, "parameterTypes: 参数类型 ：" + c.getName());
+                }
             }
             //获取公有无参构造方法
             //1>、因为是无参的构造方法所以类型是一个null,不写也可以：这里需要的是一个参数的类型，切记是类型
