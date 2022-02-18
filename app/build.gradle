@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
 }
+apply plugin: 'me.ele.lancet'
 
 android {
     compileSdk 31
@@ -77,4 +78,6 @@ dependencies {
     annotationProcessor project(":Compiler")
     implementation project(path: ':Annotation')
     implementation project(":TestServiceLoaderInterface")
+
+    compileOnly 'me.ele:lancet-base:1.0.6'
 }

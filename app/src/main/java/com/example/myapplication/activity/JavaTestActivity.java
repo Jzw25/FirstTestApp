@@ -8,6 +8,7 @@ import android.view.View;
 
 import com.example.myapplication.R;
 import com.example.myapplication.bean.AnnotationTestBean;
+import com.example.myapplication.bean.HookBean;
 import com.example.myapplication.databinding.ActivityJavaTestBinding;
 import com.example.myapplication.databinding.ActivityTestSheJiBinding;
 import com.example.myapplication.javatest.HookTets;
@@ -114,4 +115,5 @@ public class JavaTestActivity extends AppCompatActivity implements View.OnClickL
             hookTets.tryProxyTest();
         }
     }
+
 }
