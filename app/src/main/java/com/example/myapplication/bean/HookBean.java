@@ -33,6 +33,10 @@ public class HookBean {
         hookPriClass.showName();
     }
 
+    public void show3(HookPriClass aclass){
+        aclass.showName();
+    }
+
     public static class HookPriClass{
         private String name;
 
