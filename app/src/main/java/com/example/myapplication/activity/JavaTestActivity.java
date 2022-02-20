@@ -9,10 +9,12 @@ import android.view.View;
 import com.example.myapplication.R;
 import com.example.myapplication.bean.AnnotationTestBean;
 import com.example.myapplication.bean.HookBean;
+import com.example.myapplication.bean.MyEventBean;
 import com.example.myapplication.databinding.ActivityJavaTestBinding;
 import com.example.myapplication.databinding.ActivityTestSheJiBinding;
 import com.example.myapplication.javatest.HookTets;
 import com.example.myapplication.javatest.MyAnnotationTest;
+import com.example.myapplication.javatest.MyEventBus;
 import com.jzw.testserviceloaderinterface.TestInterface;
 
 import java.lang.reflect.Field;
@@ -114,6 +116,11 @@ public class JavaTestActivity extends AppCompatActivity implements View.OnClickL
 //            hookTets.tryTest4();
             hookTets.tryProxyTest();
         }
+    }
+
+    @MyEventBus
+    public void testEventBus(MyEventBean bean){
+
     }
 
 }
