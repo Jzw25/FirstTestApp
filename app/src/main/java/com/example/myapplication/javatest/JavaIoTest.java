@@ -22,7 +22,10 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PipedReader;
 import java.io.PipedWriter;
+import java.io.RandomAccessFile;
 import java.io.Serializable;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 
 /**
@@ -845,6 +848,137 @@ public class JavaIoTest {
      * Serializable序列化不保存静态变量，可以使用Transient关键字对部分字段不进行序列化，也可以覆盖
      *
      * writeObject、readObject方法以实现序列化过程自定义。
+     */
+
+    /**
+     * FileChannel
+     * FileChannel类可以实现常用的read，write以及scatter/gather操作，同时它也提供了很多专用于文件的新方法。
+     * 这些方法中的许多都是我们所熟悉的文件操作。
+     *
+     * 文件通道总是阻塞式的，因此不能被置于非阻塞模式。现代操作系统都有复杂的缓存和预取机制，使得本地磁盘I/O操作
+     * 延迟很少。网络文件系统一般而言延迟会多些，不过却也因该优化而受益。面向流的I/O的非阻塞范例对于面向文件的操
+     * 作并无多大意义，这是由文件I/O本质上的不同性质造成的。对于文件I/O，最强大之处在于异步I/O（asynchronous I/O）
+     * ，它允许一个进程可以从操作系统请求一个或多个I/O操作而不必等待这些操作的完成。发起请求的进程之后会收到它请求
+     * 的I/O操作已完成的通知。
+     * FileChannel对象是线程安全（thread-safe）的。多个进程可以在同一个实例上并发调用方法而不会引起任何问题，
+     * 不过并非所有的操作都是多线程的（multithreaded）。影响通道位置或者影响文件大小的操作都是单线程的（single-threaded）。
+     * 如果有一个线程已经在执行会影响通道位置或文件大小的操作，那么其他尝试进行此类操作之一的线程必须等待。并发行
+     * 为也会受到底层的操作系统或文件系统影响。
+     * 每个FileChannel对象都同一个文件描述符（file descriptor）有一对一的关系，所以上面列出的API方法与在您最
+     * 喜欢的POSIX（可移植操作系统接口）兼容的操作系统上的常用文件I/O系统调用紧密对应也就不足为怪了。本质上讲，
+     * RandomAccessFile类提供的是同样的抽象内容。在通道出现之前，底层的文件操作都是通过RandomAccessFile类的
+     * 方法来实现的。FileChannel模拟同样的I/O服务，因此它的API自然也是很相似的。
+     *
+     * 三者之间的方法对比：
+     * FILECHANNEL	RANDOMACCESSFILE	POSIX SYSTEM CALL
+     * read( )	read( )	read( )
+     * write( )	write( )	write( )
+     * size( )	length( )	fstat( )
+     * position( )	getFilePointer( )	lseek( )
+     * position (long newPosition)	seek( )	lseek( )
+     * truncate( )	setLength( )	ftruncate( )
+     * force( )	getFD().sync( )	fsync( )
+     *
+     * 1、打开FileChannel
+     * 在使用FileChannel之前，必须先打开它。但是，我们无法直接打开一个FileChannel，需要通过使用一个
+     * InputStream、OutputStream或RandomAccessFile来获取一个FileChannel实例。下面是通过RandomAccessFile
+     * 打开FileChannel的示例：
+     *
+     * RandomAccessFile aFile = new RandomAccessFile("data/nio-data.txt", "rw");
+     * FileChannel inChannel = aFile.getChannel();
+     * 2、从FileChannel读取数据
+     * 调用多个read()方法之一从FileChannel中读取数据。如：
+     *
+     * ByteBuffer buf = ByteBuffer.allocate(48);
+     * int bytesRead = inChannel.read(buf);
+     * 首先，分配一个Buffer。从FileChannel中读取的数据将被读到Buffer中。
+     *
+     * 然后，调用FileChannel.read()方法。该方法将数据从FileChannel读取到Buffer中。read()方法返回的int值表
+     * 示了有多少字节被读到了Buffer中。如果返回-1，表示到了文件末尾。
+     */
+    public void fileChannelTest(){
+        //注意 buf.flip() 的调用，首先读取数据到Buffer，然后反转Buffer,接着再从Buffer中读取数据
+        try (RandomAccessFile randomAccessFile = new RandomAccessFile("a.txt", "rw")) {
+            FileChannel channel = randomAccessFile.getChannel();
+            ByteBuffer allocate = ByteBuffer.allocate(48);
+            int bytesRead = channel.read(allocate);
+            while (bytesRead != -1) {
+                System.out.println("Read " + bytesRead);
+                allocate.flip();
+                while (allocate.hasRemaining()) {
+                    System.out.print((char) allocate.get());
+                }
+
+                allocate.clear();
+                bytesRead = channel.read(allocate);
+            }
+            System.out.println("wan");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 3、向FileChannel写数据
+     * 使用FileChannel.write()方法向FileChannel写数据，该方法的参数是一个Buffer。如：
+     *
+     * 注意FileChannel.write()是在while循环中调用的。因为无法保证write()方法一次能向FileChannel写入多少字节，
+     * 因此需要重复调用write()方法，直到Buffer中已经没有尚未写入通道的字节。
+     */
+    public void tryWriterFileChannel(FileChannel channel){
+        String newData = "New String to write to file..." + System.currentTimeMillis();
+        ByteBuffer buf = ByteBuffer.allocate(48);
+        buf.clear();
+        buf.put(newData.getBytes());
+
+        buf.flip();
+
+        while(buf.hasRemaining()) {
+            try {
+                channel.write(buf);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }finally {
+                try {
+                    channel.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+    /**
+     * 5、FileChannel的position方法
+     * 有时可能需要在FileChannel的某个特定位置进行数据的读/写操作。可以通过调用position()方法获取FileChannel的当前位置。
+     *
+     * 也可以通过调用position(long pos)方法设置FileChannel的当前位置。
+     *
+     * 这里有两个例子:
+     *
+     * long pos = channel.position();
+     * channel.position(pos +123);
+     * 如果将位置设置在文件结束符之后，然后试图从文件通道中读取数据，读方法将返回-1 —— 文件结束标志。
+     *
+     * 如果将位置设置在文件结束符之后，然后向通道中写数据，文件将撑大到当前位置并写入数据。这可能导致“文件空洞”，磁盘上物理文件中写入的数据间有空隙。
+     *
+     * 6、FileChannel的size方法
+     * FileChannel实例的size()方法将返回该实例所关联文件的大小。如:
+     *
+     * long fileSize = channel.size();
+     * 7、FileChannel的truncate方法
+     * 可以使用FileChannel.truncate()方法截取一个文件。截取文件时，文件将中指定长度后面的部分将被删除。如：
+     *
+     * channel.truncate(1024);
+     * 这个例子截取文件的前1024个字节。
+     *
+     * 8、FileChannel的force方法
+     * FileChannel.force()方法将通道里尚未写入磁盘的数据强制写到磁盘上。出于性能方面的考虑，操作系统会将数据缓存在内存中，所以无法保证写入到FileChannel里的数据一定会即时写到磁盘上。要保证这一点，需要调用force()方法。
+     *
+     * force()方法有一个boolean类型的参数，指明是否同时将文件元数据（权限信息等）写到磁盘上。
+     *
+     * 下面的例子同时将文件数据和元数据强制写到磁盘上：
      */
 
 }
