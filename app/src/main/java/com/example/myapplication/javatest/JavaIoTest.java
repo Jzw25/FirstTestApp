@@ -25,7 +25,13 @@ import java.io.PipedWriter;
 import java.io.RandomAccessFile;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 
 /**
@@ -929,7 +935,7 @@ public class JavaIoTest {
      */
     public void tryWriterFileChannel(FileChannel channel){
         String newData = "New String to write to file..." + System.currentTimeMillis();
-        ByteBuffer buf = ByteBuffer.allocate(48);
+        ByteBuffer buf = ByteBuffer.allocate(48);//48个字节
         buf.clear();
         buf.put(newData.getBytes());
 
@@ -979,6 +985,246 @@ public class JavaIoTest {
      * force()方法有一个boolean类型的参数，指明是否同时将文件元数据（权限信息等）写到磁盘上。
      *
      * 下面的例子同时将文件数据和元数据强制写到磁盘上：
+     */
+
+    /**
+     * 内存映射
+     * 内存映射文件的作用是使一个磁盘文件与存储空间中的一个缓冲区建立映射关系，然后当从缓冲区中取数据，就相当于
+     * 读文件中的相应字节；而将数据存入缓冲区，就相当于写文件中的相应字节。这样就可以不使用read和write直接执行I/O了。
+     * 通过操作内存来操作文件，省了从磁盘文件拷贝数据到用户缓冲区的步骤，所以十分高效。
+     */
+
+    /**
+     *FileChannel的map:在FileChannel中，也定义了一个内存映射的操作，我们可以使用它来加速文件的读写。
+     * map方法
+     * FileChannel提供了map方法来把文件影射为内存映像文件：
+     *
+     * MappedByteBuffer map(int mode,long position,long size);
+     * 可以把文件的从position开始的size大小的区域映射为内存映像文件，mode指出了 可访问该内存映像文件的方式：
+     * READ_ONLY，READ_WRITE，PRIVATE。
+     *
+     * READ_ONLY,（只读）： 试图修改得到的缓冲区将导致抛出 ReadOnlyBufferException.(MapMode.READ_ONLY)
+     * READ_WRITE（读/写）： 对得到的缓冲区的更改最终将传播到文件；该更改对映射到同一文件的其他程序不一定是可见的。
+     * (MapMode.READ_WRITE)
+     * PRIVATE（专用）： 对得到的缓冲区的更改不会传播到文件，并且该更改对映射到同一文件的其他程序也不是可见的；
+     * 相反，会创建缓冲区已修改部分的专用副本。 (MapMode.PRIVATE)
+     */
+    public void tryFileChannelMap(){
+        FileChannel channel = null;
+        FileChannel wordFileChannel = null;
+        try (RandomAccessFile file = new RandomAccessFile("a.txt", "rw")) {
+            channel = file.getChannel();
+            MappedByteBuffer map = channel.map(FileChannel.MapMode.READ_WRITE, 0, 20);
+
+            try (RandomAccessFile wordFile = new RandomAccessFile("b.txt", "rw")) {
+                wordFileChannel = wordFile.getChannel();
+                MappedByteBuffer mappedByteBuffer = wordFileChannel.map(FileChannel.MapMode.READ_WRITE, 0, 20);
+                mappedByteBuffer.put(map);
+
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            try {
+                channel.close();
+                wordFileChannel.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * 使用MappedByteBuffer实现内存共享
+     * 实际上，我们可以在两个Java进程中各使用一次map将文件映射到内存，这样两个进程就可以直接通过这个共享内存来
+     * 实现进程间的数据通信了。
+     */
+    public void tryFileChannelMapShare(){
+        //写入
+        new Thread(() -> {
+            FileChannel fileChannel = null;
+            try (RandomAccessFile file = new RandomAccessFile("a.txt", "rw")) {
+                fileChannel = file.getChannel();
+                MappedByteBuffer map = fileChannel.map(FileChannel.MapMode.READ_WRITE, 0, 20);
+                map.put("how are you".getBytes());
+                Thread.sleep(10000);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }finally {
+                try {
+                    fileChannel.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+    }
+
+    public void tryFileChannelMapShare2(){
+        //读取
+        FileChannel fileChannel = null;
+        try (RandomAccessFile accessFile = new RandomAccessFile("a.txt", "rw")) {
+            fileChannel = accessFile.getChannel();
+            MappedByteBuffer map = fileChannel.map(FileChannel.MapMode.READ_WRITE, 2, 20);
+            while (map.hasRemaining()){
+                Log.d(TAG, "tryFileChannelMapShare2: the date is : " + map.get());
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 原理
+     * 在sun.nio.ch.FileChannelImpl里有map的具体实现：
+     *
+     *             try {
+     *                 // If no exception was thrown from map0, the address is valid
+     *                 addr = map0(imode, mapPosition, mapSize);
+     *             } catch (OutOfMemoryError x) {
+     *
+     *
+     *     private native long map0(int prot, long position, long length)
+     * 调用的是一个native方法，这个native方法的实现位于solaris/native/sun/nio/ch/FileChannelImpl.c
+     *
+     * 是这样的
+     *
+     * JNIEXPORT jlong JNICALL
+     * Java_sun_nio_ch_FileChannelImpl_map0(JNIEnv *env, jobject this,
+     *                                      jint prot, jlong off, jlong len)
+     * {
+     *     void *mapAddress = 0;
+     *     jobject fdo = (*env)->GetObjectField(env, this, chan_fd);
+     *     jint fd = fdval(env, fdo);
+     *     int protections = 0;
+     *     int flags = 0;
+     *
+     *     if (prot == sun_nio_ch_FileChannelImpl_MAP_RO) {
+     *         protections = PROT_READ;
+     *         flags = MAP_SHARED;
+     *     } else if (prot == sun_nio_ch_FileChannelImpl_MAP_RW) {
+     *         protections = PROT_WRITE | PROT_READ;
+     *         flags = MAP_SHARED;
+     *     } else if (prot == sun_nio_ch_FileChannelImpl_MAP_PV) {
+     *         protections =  PROT_WRITE | PROT_READ;
+     *         flags = MAP_PRIVATE;
+     *     }
+     *
+     *     mapAddress = mmap64(
+     *         0,                    /* Let OS decide location /
+     *len,                  /* Number of bytes to map /
+            *protections,          /* File permissions /
+            *flags,                /* Changes are shared /
+            *fd,                   /* File descriptor of mapped file /
+            *off);                 /* Offset into file /
+     *
+             *if(mapAddress ==MAP_FAILED)
+
+    {
+     *if (errno == ENOMEM) {
+     *JNU_ThrowOutOfMemoryError(env, "Map failed");
+     *return IOS_THROWN;
+     *}
+     *return handle(env, -1, "Map failed");
+     *}
+     *
+             *return((jlong)(unsigned long)mapAddress);
+     *
+}
+     *哈哈，原来还是使用的mmap这个系统调用。所以，Java中的很多操作其实就是linux系统调用封了一层皮而已。
+     */
+
+    /**
+     * 要注意的地方
+     * 我们在讲解DirectBuffer的时候，就跳过了一个重要的地方，那就是它是怎么回收的。这个机制十分复杂，牵扯到GC的
+     * 具体实现，同样的问题，在MappedByteBuffer中也存在。
+     *
+     * 如果你使用了FileChannel.map方法去映射一个文件，然后马上关闭这个channel，然后再试图删除文件，就会发现不
+     * 能成功。这是因为MappedByteBuffer还没有被回收，文件句柄还没有释放。而具体什么时候才会释放，以及能不能提
+     * 前释放。这个问题等我们讲完了GC之后再来看。现在只需要知道基本的用法就好了。
+     */
+
+    public void trySecondFileChannelRead(){
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            CharBuffer charBuffer = null;
+            /**
+             * Path 既可以表示一个目录，也可以表示一个文件，就像 File 那样——当然了，Path 是用来取代 File 的。
+             * xxxx为文件路径
+             */
+            Path path = Paths.get("xxxx");
+            //从文件中获取一个 channel（通道，对磁盘文件的一种抽象）。
+            try (FileChannel open = FileChannel.open(path)) {
+                //把文件映射到内存缓冲区
+                MappedByteBuffer map = open.map(FileChannel.MapMode.READ_ONLY, 0, open.size());
+                //打印数据
+                if(map!=null){
+                    //由于 decode() 方法的参数是 MappedByteBuffer，这就意味着我们是从内存中而不是磁盘中读入的文件内容，所以速度会非常快。
+                    charBuffer = Charset.forName("UTF-8").decode(map);
+                }
+                Log.d(TAG, "trySecondFileChannelRead: the date is : " + charBuffer.toString());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+    public void trySecondFileChannelWrite(){
+        //写入数据
+        CharBuffer charBuffer = CharBuffer.wrap("adasxasdasd");
+        //创建存放路径
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            Path path = Paths.get("xxxx");
+            /**
+             * 创建文件通道
+             * 仍然使用的 open 方法，不过增加了 3 个参数，前 2 个很好理解，表示文件可读（READ）、可写（WRITE）；
+             * 第 3 个参数 TRUNCATE_EXISTING 的意思是如果文件已经存在，并且文件已经打开将要进行 WRITE 操作，则其长度被截断为 0。
+             */
+            try (FileChannel open = FileChannel.open(path, StandardOpenOption.WRITE,
+                    StandardOpenOption.READ, StandardOpenOption.TRUNCATE_EXISTING)) {
+                //指定文件大小为 1024，即 1KB 的大小
+                MappedByteBuffer map = open.map(FileChannel.MapMode.READ_WRITE, 0, 1024);
+                if(map!=null){
+                    map.put(Charset.forName("UTF-8").encode(charBuffer));
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    /**
+     * 03、MappedByteBuffer 的遗憾
+     * 据说，在 Java 中使用 MappedByteBuffer 是一件非常麻烦并且痛苦的事，主要表现有：
+     *
+     * 1）一次 map 的大小最好限制在 1.5G 左右，重复 map 会增加虚拟内存回收和重新分配的压力。也就是说，如果文件大小不确定的话，就不太友好。
+     *
+     * 2）虚拟内存由操作系统来决定什么时候刷新到磁盘，这个时间不太容易被程序控制。
+     *
+     * 3）MappedByteBuffer 的回收方式比较诡异。
+     *
+     * 再次强调，这三种说法都是据说，我暂时能力有限，也不能确定这种说法的准确性，很遗憾。
+     *
+     * 04、比较文件操作的处理时间
+     * 嗨，朋友，阅读完以上的内容之后，我想你一定对内存映射文件有了大致的了解。但我相信，如果你是一名负责任的程序员，你一定还想知道：内存映射文件的读取速度究竟有多快。
+     *
+     * 为了得出结论，我叫了另外三名竞赛的选手：InputStream（普通输入流）、BufferedInputStream（带缓冲的输入流）、RandomAccessFile（随机访问文件）。
+     *
+     * 方法	时间
+     * 普通输入流	龟速，没有耐心等出结果
+     * 随机访问文件	龟速，没有耐心等下去
+     * 带缓冲的输入流	29966
+     * 内存映射文件	914
      */
 
 }
