@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -149,8 +150,8 @@ private ActivityMain2Binding binding;
             Cursor cursor = readableDatabase.rawQuery(sql,null);
             //遍历数据
             while (cursor.moveToNext()){
-                int id = cursor.getInt(cursor.getColumnIndex("_id"));
-                String name = cursor.getString(cursor.getColumnIndex("name"));
+                @SuppressLint("Range") int id = cursor.getInt(cursor.getColumnIndex("_id"));
+                @SuppressLint("Range") String name = cursor.getString(cursor.getColumnIndex("name"));
                 Log.d("chaxun", "searchDatebase: id="+id+"name="+name);
             }
             //关闭游标
