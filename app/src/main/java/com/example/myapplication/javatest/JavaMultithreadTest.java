@@ -3,8 +3,17 @@ package com.example.myapplication.javatest;
 import android.os.SystemClock;
 import android.util.Log;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicStampedReference;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -17,6 +26,7 @@ public class JavaMultithreadTest {
     private String A = "A";
     private String B = "B";
     private AtomicReference<String> reference;
+    private AtomicStampedReference<String> atomicStampedReference;
     private AtomicInteger atomicInteger;
 
     public void tryAtmoicReference(){
@@ -24,6 +34,114 @@ public class JavaMultithreadTest {
         reference.set(A);
 
     }
+    /**
+     * 线程实现：继承runabll，继承thread
+     */
+
+    public class MyTestThread extends Thread{
+        @Override
+        public void run() {
+            super.run();
+            //do someting
+        }
+    }
+
+    public class MyTestRunable implements Runnable{
+
+        @Override
+        public void run() {
+            //do someting
+        }
+    }
+
+    /**
+     * 调用线程
+     */
+    public void tryThread(){
+        MyTestThread myTestThread = new MyTestThread();
+        //设置为守护线程,start之前设置
+        myTestThread.setDaemon(true);
+        myTestThread.start();
+
+        MyTestRunable myTestRunable = new MyTestRunable();
+        Thread thread = new Thread(myTestRunable);
+        thread.start();
+    }
+
+    /**
+     * 中断线程是什么？(该解释来自java核心技术一书，我对其进行稍微简化)， 当线程的run()方法执行方法体中的最后一
+     * 条语句后，并经由执行return语句返回时，或者出现在方法中没有捕获的异常时线程将终止。在java早期版本中有一个
+     * stop方法，其他线程可以调用它终止线程，但是这个方法现在已经被弃用了，因为这个方法会造成一些线程不安全的问题
+     * 。我们可以把中断理解为一个标识位的属性，它表示一个运行中的线程是否被其他线程进行了中断操作，而中断就好比其
+     * 他线程对该线程打可个招呼，其他线程通过调用该线程的 interrupt方法对其进行中断操作，当一个线程调用interrupt
+     * 方法时，线程的中断状态（标识位）将被置位（改变），这是每个线程都具有的boolean标志，每个线程都应该不时的检
+     * 查这个标志，来判断线程是否被中断。而要判断线程是否被中断
+     * Thread.currentThread().isInterrupted()
+     * 关于中断线程，我们这里给出中断线程的一些主要方法：
+     * void interrupt()：向线程发送中断请求，线程的中断状态将会被设置为true，如果当前线程被一个sleep调用阻塞，
+     * 那么将会抛出interrupedException异常。
+     * static boolean interrupted()：测试当前线程（当前正在执行命令的这个线程）是否被中断。注意这是个静态方法，
+     * 调用这个方法会产生一个副作用那就是它会将当前线程的中断状态重置为false。
+     * boolean isInterrupted()：判断线程是否被中断，这个方法的调用不会产生副作用即不改变线程的当前中断状态。
+     * static Thread currentThread() : 返回代表当前执行线程的Thread对象。
+     *
+     * 守护线程:
+     * 首先我们可以通过t.setDaemon(true)的方法将线程转化为守护线程。而守护线程的唯一作用就是为其他线程提供服务。
+     * 计时线程就是一个典型的例子，它定时地发送“计时器滴答”信号告诉其他线程去执行某项任务。当只剩下守护线程时，
+     * 虚拟机就退出了，因为如果只剩下守护线程，程序就没有必要执行了。另外JVM的垃圾回收、内存管理等线程都是守护
+     * 线程。还有就是在做数据库应用时候，使用的数据库连接池，连接池本身也包含着很多后台线程，监控连接个数、超时
+     * 时间、状态等等。最后还有一点需要特别注意的是在java虚拟机退出时Daemon线程中的finally代码块并不一定会执行
+     * **其实守护线程和用户线程区别不大，可以理解为特殊的用户线程。特殊就特殊在如果程序中所有的用户线程都退出了，
+     * 那么所有的守护线程就都会被杀死，很好理解，没有被守护的对象了，也不需要守护线程了
+     * 还有一个启动守护线程的方法就是利用Timer和TimerTask。Timer是JDK提供的定时器工具，使用时会在主线程之外单
+     * 独起一个线程执行指定的任务。Timer timer = new Timer()启动的是用户线程，而Timer timer =
+     * new Timer(true)启动的就是守护线程。TimerTask是一个实现了Runnable接口的抽象类，配合Timer
+     * 使用可以看做被Timer执行的任务，即启动的线程。
+     *
+     * 线程优先级:
+     * 在现代操作系统中基本采用时分的形式调度运行的线程，操作系统会分出一个个时间片，线程会分配到若干时间片，
+     * 当线程的时间片用完了就会发生线程调度，并等待着下一次分配。线程分配到的时间片多少也决定了线程使用处理
+     * 器资源的多少，而线程优先级就是决定线程需要多或者少分配一些处理器资源的线程属性。在java线程中，通过
+     * 一个整型的成员变量 Priority来控制线程优先级 ，每一个线程有一个优先级，默认情况下，一个线程继承它
+     * 父类的优先级。可以用setPriority方法提高或降低任何一个线程优先级。可以将优先级设置在MIN_PRIORITY
+     * （在Thread类定义为1）与MAX_PRIORITY（在Thread类定义为10）之间的任何值。线程的默认优先级为
+     * NORM_PRIORITY（在Thread类定义为5）。 尽量不要依赖优先级，如果确实要用，应该避免初学者常犯的一个错误。
+     * 如果有几个高优先级的线程没有进入非活动状态，低优先级线程可能永远也不能执行。每当调度器决定运行一个新线程时
+     * ，首先会在具有高优先级的线程中进行选择，尽管这样会使低优先级的线程可能永远不会被执行到。因此我们在设置优
+     * 先级时，针对频繁阻塞（休眠或者I/O操作）的线程需要设置较高的优先级，而偏重计算（需要较多CPU时间或者运算）
+     * 的线程则设置较低的优先级，这样才能确保处理器不会被长久独占。当然还有要注意就是在不同的JVM以及操作系统上
+     * 线程的规划存在差异，有些操作系统甚至会忽略对线程优先级的设定，如mac os系统或者Ubuntu系统........
+     *
+     * 线程的状态转化关系
+     * （1）. 新建状态（New）：新创建了一个线程对象。
+     * （2）. 就绪状态（Runnable）：线程对象创建后，其他线程调用了该对象的start()方法。该状态的线程位于可运行线程池中，变得可运行，等待获取CPU的使用权。
+     * （3）. 运行状态（Running）：就绪状态的线程获取了CPU，执行程序代码。
+     * （4）. 阻塞状态（Blocked）：阻塞状态是线程因为某种原因放弃CPU使用权，暂时停止运行。直到线程进入就绪状态，才有机会转到运行状态。阻塞的情况分三种：
+     * - 等待阻塞（WAITING）：运行的线程执行wait()方法，JVM会把该线程放入等待池中。
+     *
+     * - 同步阻塞（Blocked）：运行的线程在获取对象的同步锁时，若该同步锁被别的线程占用，则JVM会把该线程放入锁池中。
+     *
+     * - 超时阻塞（TIME_WAITING）：运行的线程执行sleep(long)或join(long)方法，或者发出了I/O请求时，JVM会把该线程置为阻塞状态。
+     *
+     * （5）. 死亡状态（Dead）：线程执行完了或者因异常退出了run()方法，该线程结束生命周期。
+     *  图示再hpid下：threadstate
+     *  Thread.sleep()：在指定时间内让当前正在执行的线程暂停执行，但不会释放"锁标志"。不推荐使用。
+     * Thread.sleep(long)：使当前线程进入阻塞状态，在指定时间内不会执行。
+     * Object.wait()和 Object.wait(long) ：在其他线程调用对象的notify或notifyAll方法前，导致当前线程等待。
+     * 线程会释放掉它所占有的"锁标志"，从而使别的线程有机会抢占该锁。  当前线程必须拥有当前对象锁。如果当前线程
+     * 不是此锁的拥有者，会抛出IllegalMonitorStateException异常。 唤醒当前对象锁的等待线程使用notify或
+     * notifyAll方法，也必须拥有相同的对象锁，否则也会抛出IllegalMonitorStateException异常， waite()和
+     * notify()必须在synchronized函数或synchronized中进行调用。如果在non-synchronized函数或non-synchronized
+     * 中进行调用,虽然能编译通过，但在运行时会发生IllegalMonitorStateException的异常。
+     * Object.notifyAll()：则从对象等待池中唤醒所有等待等待线程
+     * Object.notify()：则从对象等待池中唤醒其中一个线程。
+     * Thread.yield()方法 暂停当前正在执行的线程对象，yield()只是使当前线程重新回到可执行状态，所以执行yield()
+     * 的线程有可能在进入到可执行状态后马上又被执行，yield()只能使同优先级或更高优先级的线程有执行的机会。
+     * Thread.Join()：把指定的线程加入到当前线程，可以将两个交替执行的线程合并为顺序执行的线程。比如在线程B中调
+     * 用了线程A的Join()方法，直到线程A执行完毕后，才会继续执行线程B。
+     */
+
+
 
     /**
      * lock ：
@@ -431,5 +549,350 @@ public class JavaMultithreadTest {
         thread3.start();
         thread2.start();
         thread1.start();
+    }
+
+    /**
+     * CAS 操作包含三个操作数 —— 内存位置（V）、预期原值（A）和新值(B)。 如果内存位置的值与预期原值相匹配，那么
+     * 处理器会自动将该位置值更新为新值 。否则，处理器不做任何操作。无论哪种情况，它都会在 CAS 指令之前返回该
+     * 位置的值。（在 CAS 的一些特殊情况下将仅返回 CAS 是否成功，而不提取当前 值。）CAS 有效地说明了“我认为位
+     * 置 V 应该包含值 A；如果包含该值，则将 B 放到这个位置；否则，不要更改该位置，只告诉我这个位置现在的值即可。”
+     * (即内存上的值如果与A相同代表没改变，则去改变为新值，如果不相同则代表值已经改变，此时便不再去改变值)
+     *
+     * 通常将 CAS 用于同步的方式是从地址 V 读取值 A，执行多步计算来获得新 值 B，然后使用 CAS 将 V 的值从 A
+     * 改为 B。如果 V 处的值尚未同时更改，则 CAS 操作成功。
+     *
+     * 类似于 CAS 的指令允许算法执行读-修改-写操作，而无需害怕其他线程同时 修改变量，因为如果其他线程修改变量，
+     * 那么 CAS 会检测它（并失败），算法 可以对该操作重新计算。
+     *
+     * CAS存在的问题
+     *
+     * CAS虽然很高效的解决原子操作，但是CAS仍然存在三大问题。ABA问题，循环时间长开销大和只能保证一个共享变量的原子操作
+     *
+     * 1.  ABA问题。因为CAS需要在操作值的时候检查下值有没有发生变化，如果没有发生变化则更新，但是如果一个值原来
+     * 是A，变成了B，又变成了A，那么使用CAS进行检查时会发现它的值没有发生变化，但是实际上却变化了。ABA问题的解
+     * 决思路就是使用版本号。在变量前面追加上版本号，每次变量更新的时候把版本号加一，那么A－B－A 就会变成1A-2B－3A。
+     *
+     * 从Java1.5开始JDK的atomic包里提供了一个类AtomicStampedReference来解决ABA问题。这个类的compareAndSet
+     * 方法作用是首先检查当前引用是否等于预期引用，并且当前标志是否等于预期标志，如果全部相等，则以原子方式将该引
+     * 用和该标志的值设置为给定的更新值。
+     * 关于ABA问题参考文档: http://blog.hesey.net/2011/09/resolve-aba-by-atomicstampedreference.html
+     *
+     * 2. 循环时间长开销大。自旋CAS如果长时间不成功，会给CPU带来非常大的执行开销。如果JVM能支持处理器提供的
+     * pause指令那么效率会有一定的提升，pause指令有两个作用，第一它可以延迟流水线执行指令（de-pipeline）,
+     * 使CPU不会消耗过多的执行资源，延迟的时间取决于具体实现的版本，在一些处理器上延迟时间是零。第二它可以
+     * 避免在退出循环的时候因内存顺序冲突（memory order violation）而引起CPU流水线被清空
+     * （CPU pipeline flush），从而提高CPU的执行效率。
+     *
+     * 3. 只能保证一个共享变量的原子操作。当对一个共享变量执行操作时，我们可以使用循环CAS的方式来保证原子操作，
+     * 但是对多个共享变量操作时，循环CAS就无法保证操作的原子性，这个时候就可以用锁，或者有一个取巧的办法，就是
+     * 把多个共享变量合并成一个共享变量来操作。比如有两个共享变量i＝2,j=a，合并一下ij=2a，然后用CAS来操作ij。
+     * 从Java1.5开始JDK提供了AtomicReference类来保证引用对象之间的原子性，你可以把多个变量放在一个对象里来
+     * 进行CAS操作。
+     */
+
+    private AtomicInteger atomicInt = new AtomicInteger(100);
+
+    private AtomicStampedReference<Integer> atomicStampedRef = new AtomicStampedReference<Integer>(100, 0);
+
+    public void tryAtomicStampedReferenceTest(){
+        Thread intT1 = new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                atomicInt.compareAndSet(100, 101);
+                atomicInt.compareAndSet(101, 100);
+            }
+
+        });
+
+        Thread intT2 = new Thread(new Runnable() {
+
+            @Override
+
+            public void run() {
+                try {
+                    TimeUnit.SECONDS.sleep(1);
+                } catch (InterruptedException e) {
+
+                }
+                boolean c3 = atomicInt.compareAndSet(100, 101);
+                //cas成功
+                Log.d(TAG, "tryAtomicStampedReferenceTest: " + c3);
+            }
+        });
+
+        intT1.start();
+        intT2.start();
+        try {
+            intT1.join();
+            intT2.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        Thread refT1 = new Thread(new Runnable() {
+
+            @Override
+            public void run(){
+                try {
+                    TimeUnit.SECONDS.sleep(1);
+                } catch (InterruptedException e) {
+                }
+                atomicStampedRef.compareAndSet(100, 101, atomicStampedRef.getStamp(), atomicStampedRef.getStamp() + 1);
+                atomicStampedRef.compareAndSet(101, 100, atomicStampedRef.getStamp(), atomicStampedRef.getStamp() + 1);
+            }
+
+        });
+
+        Thread refT2 = new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+
+                int stamp = atomicStampedRef.getStamp();
+
+                try {
+                    TimeUnit.SECONDS.sleep(2);
+                } catch (InterruptedException e) {
+                }
+                boolean c3 = atomicStampedRef.compareAndSet(100, 101, stamp, stamp + 1);
+                //cas失败
+                Log.d(TAG, "tryAtomicStampedReferenceTest: " + c3);
+            }
+        });
+
+        refT1.start();
+        refT2.start();
+    }
+
+    /**
+     * Executor框架的结构
+     * Executor框架的结构主要包括3个部分
+     * 1.任务：包括被执行任务需要实现的接口：Runnable接口或Callable接口
+     * 2.任务的执行：包括任务执行机制的核心接口Executor，以及继承自Executor的EexcutorService接口。Exrcutor
+     * 有两个关键类实现了ExecutorService接口（ThreadPoolExecutor和ScheduledThreadPoolExecutor）。
+     * 3.异步计算的结果：包括接口Future和实现Future接口的FutureTask类 图：hpid下executor
+     *
+     * Extecutor是一个接口，它是Executor框架的基础，它将任务的提交与任务的执行分离开来。
+     * ThreadPoolExecutor是线程池的核心实现类，用来执行被提交的任务。
+     * ScheduledThreadPoolExecutor是一个实现类，可以在给定的延迟后运行命令，或者定期执行命令。
+     * ScheduledThreadPoolExecutor比Timer更灵活，功能更强大。
+     * Future接口和实现Future接口的FutureTask类，代表异步计算的结果。
+     * Runnable接口和Callable接口的实现类，都可以被ThreadPoolExecutor或者 ScheduledThreadPoolExecutor执行
+     * 。区别就是Runnable无法返回执行结果，而Callable可以返回执行结果。 图：hpid下executorservice
+     *
+     * 主线程首先创建实现Runnable或Callable接口的任务对象，工具类Executors可以把一个Runnable对象封装为一个
+     * Callable对象,使用如下两种方式：
+     * Executors.callable(Runnable task)或者Executors.callable(Runnable task,Object resule)。
+     * 然后可以把Runnable对象直接提交给ExecutorService执行，方法为ExecutorService.execute(Runnable command)；
+     * 或者也可以把Runnable对象或者Callable对象提交给ExecutorService执行，方法为ExecutorService.
+     * submit(Runnable task)或ExecutorService.submit(Callable<T> task)。这里需要注意的是如果执行
+     * ExecutorService.submit(...), ExecutorService将返回一个实现Future接口的对象（其实就是FutureTask）。
+     * 当然由于FutureTask实现了Runnable接口，我们也可以直接创建FutureTask，然后提交给ExecutorService执行
+     */
+    public void tryExecutorsTest(){
+        Callable<Object> callable = Executors.callable(new Runnable() {
+            @Override
+            public void run() {
+
+            }
+        });
+    }
+
+    /**
+     * ThreadPoolExecutor:
+     * public ThreadPoolExecutor(int corePoolSize,
+     *                               int maximumPoolSize,
+     *                               long keepAliveTime,
+     *                               TimeUnit unit,
+     *                               BlockingQueue<Runnable> workQueue,
+     *                               ThreadFactory threadFactory) {
+     *         this(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue,
+     *              threadFactory, defaultHandler);
+     *     }
+     * corePoolSize：线程池的核心线程数，默认情况下，核心线程数会一直在线程池中存活，即使它们处理闲置状态。
+     * 如果将ThreadPoolExecutor的allowCoreThreadTimeOut属性设置为true，那么闲置的核心线程在等待新任务到来时
+     * 会执行超时策略，这个时间间隔由keepAliveTime所指定，当等待时间超过keepAliveTime所指定的时长后，核心线程就会被终止。
+     * maximumPoolSize：线程池所能容纳的最大线程数量，当活动线程数到达这个数值后，后续的新任务将会被阻塞。
+     * keepAliveTime：非核心线程闲置时的超时时长，超过这个时长，非核心线程就会被回收。当 ThreadPoolExecutor
+     * 的allowCoreThreadTimeOut属性设置为true时，keepAliveTime同样会作用于核心线程。
+     * unit：用于指定keepAliveTime参数的时间单位，这是一个枚举，常用的有TimeUnit.MILLISECONDS(毫秒)，
+     * TimeUnit.SECONDS(秒)以及TimeUnit.MINUTES(分钟)等。
+     * workQueue：线程池中的任务队列，通过线程池的execute方法提交Runnable对象会存储在这个队列中。
+     * threadFactory：线程工厂，为线程池提供创建新线程的功能。ThreadFactory是一个接口，它只有一个方法：
+     * Thread newThread（Runnable r）。
+     * 除了上面的参数外还有个不常用的参数，RejectExecutionHandler，这个参数表示当 ThreadPoolExecutor已经关
+     * 闭或者 ThreadPoolExecutor已经饱和时（达到了最大线程池大小而且工作队列已经满），execute方法将会调用
+     * Handler的rejectExecution方法来通知调用者，默认情况 下是抛出一个RejectExecutionException异常。
+     * 了解完相关构造函数的参数，我们再来看看 ThreadPoolExecutor执行任务时的大致规则：
+     * （1）如果线程池的数量还未达到核心线程的数量，那么会直接启动一个核心线程来执行任务
+     * （2）如果线程池中的线程数量已经达到或者超出核心线程的数量，那么任务会被插入到任务队列中排队等待执行。
+     * （3）如果在步骤（2）中无法将任务插入到任务队列中，这往往是由于任务队列已满，这个时候如果线程数量未达到线程
+     * 池规定的最大值，那么会立刻启动一个非核心线程来执行任务。
+     * （4）如果在步骤（3）中线程数量已经达到线程池规定的最大值，那么就会拒绝执行此任务， ThreadPoolExecutor会
+     * 调用 RejectExecutionHandler的 rejectExecution方法来通知调用者。
+     * 到此 ThreadPoolExecutor的详细配置了解完了， ThreadPoolExecutor的执行规则也了解完了，那么接下来我们就
+     * 来介绍3种常见的线程池，它们都直接或者间接地通过配置 ThreadPoolExecutor来实现自己的功能特性，这个3种线程
+     * 池分别是FixedThreadPool，CachedThreadPool，ScheduledThreadPool以及SingleThreadExecutor。
+     */
+
+
+    public void tryThreadPoolExecutor(){
+        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(5, 20,
+                100, TimeUnit.SECONDS, null, new RejectedExecutionHandler() {
+            @Override
+            public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
+                //线程数量满，接收到通知
+            }
+        });
+        threadPoolExecutor.execute(new MyTestRunable());
+
+        /**
+         * FixedThreadPool
+         *  FixedThreadPool模式会使用一个优先固定数目的线程来处理若干数目的任务。规定数目的线程处理所有任务，
+         *  一旦有线程处理完了任务就会被用来处理新的任务(如果有的话)。FixedThreadPool模式下最多的线程数目是一定的。
+         *  public static ExecutorService newFixedThreadPool(int nThreads) {
+         *         return new ThreadPoolExecutor(nThreads, nThreads,
+         *                                       0L, TimeUnit.MILLISECONDS,
+         *                                       new LinkedBlockingQueue<Runnable>());
+         *     }
+         *  FixedThreadPool的corePoolSize和 maximumPoolSize参数都被设置为nThreads。当线程池中的线程数量
+         *  大于 corePoolSize时，keepAliveTime为非核心空闲线程等待新任务的最长时间，超过这个时间后非核心线
+         *  程将被终止，这里 keepAliveTime设置为0L，就说明非核心线程会立即被终止。事实上这里也没有非核心线
+         *  程创建，因为核心线程数和最大线程数都一样的。 图：fixedthreadpool
+         *
+         * （1）如果当前运行线程数少corePoolSize，则创建一个新的线程来执行任务。
+         * （2）如果当前线程池的运行线程数等于corePoolSize，那么后面提交的任务将加入LinkedBlockingQueue。
+         * （3）线程在执行完图中的1后，会在循环中反复从 LinkedBlockingQueue获取任务来执行。
+         * 这里还有点要说明的是FixedThreadPool使用的是无界队列 LinkedBlockingQueue作为线程池的工作队列
+         * （队列容量为Integer.MAX_VALUE）。使用该队列作为工作队列会对线程池产生如下影响
+         * （1）当前线程池中的线程数量达到corePoolSize后，新的任务将在无界队列中等待。
+         * （2）由于我们使用的是无界队列，所以参数 maximumPoolSize和keepAliveTime无效。
+         * （3）由于使用无界队列，运行中的 FixedThreadPool不会拒绝任务（当然此时是未执行shutdown和shutdownNow方法）
+         * ，所以不会去调用 RejectExecutionHandler的 rejectExecution方法抛出异常。
+         */
+
+        ExecutorService executorService = Executors.newFixedThreadPool(3);
+        //三个线程来执行五个任务
+        for (int i = 0 ; i<5;i++){
+            executorService.execute(new MyTestRunable());
+        }
+
+        /**
+         * CachedThreadPool:
+         * CachedThreadPool首先会按照需要创建足够多的线程来执行任务(Task)。随着程序执行的过程，有的线程执行完
+         * 了任务，可以被重新循环使用时，才不再创建新的线程来执行任务。创建方式：
+         * public static ExecutorService newCachedThreadPool() {
+         *         return new ThreadPoolExecutor(0, Integer.MAX_VALUE,
+         *                                       60L, TimeUnit.SECONDS,
+         *                                       new SynchronousQueue<Runnable>());
+         *     }
+         * 从该静态方法，我们可以看到 CachedThreadPool的corePoolSize被设置为0，而 maximumPoolSize被设置
+         * Integer.MAX_VALUE，即 maximumPoolSize是无界的，而keepAliveTime被设置为60L，单位为妙。也就是
+         * 空闲线程等待时间最长为60秒，超过该时间将会被终止。而且在这里 CachedThreadPool使用的是没有容量的
+         * SynchronousQueue作为线程池的工作队列，但其 maximumPoolSize是无界的，也就是意味着如果主线程提
+         * 交任务的速度高于 maximumPoolSize中线程处理任务的速度时 CachedThreadPool将会不断的创建新的线程，
+         * 在极端情况下， CachedThreadPool会因为创建过多线程而耗尽CPU和内存资源。 CachedThreadPool 的
+         * execute()方法的运行流程：图：hpid下CachedThreadPool
+         * （1）首先执行 SynchronousQueue.offer(Runnable task)，添加一个任务。如果当前 CachedThreadPool中
+         * 有空闲线程正在执行 SynchronousQueue.poll(keepAliveTime,TimeUnit.NANOSECONDS), 其中NANOSECONDS
+         * 是毫微秒即十亿分之一秒（就是微秒/1000），那么主线程执行offer操作与空闲线程执行poll操作配对成功，主线
+         * 程把任务交给空闲线程执行，execute()方法执行完成，否则进入第（2）步。
+         * （2）当 CachedThreadPool初始线程数为空时，或者当前没有空闲线程，将没有线程去执行 SynchronousQueue
+         * .poll(keepAliveTime,TimeUnit.NANOSECONDS)。这样的情况下，步骤（1）将会失败，此时 CachedThreadPool
+         * 会创建一个新的线程来执行任务， execute()方法执行完成。
+         * （3）在步骤（2）中创建的新线程将任务执行完成后，会执行 SynchronousQueue.poll(keepAliveTime,
+         * TimeUnit.NANOSECONDS)，这个poll操作会让空闲线程最多在 SynchronousQueue中等待60秒，如果60秒内主
+         * 线程提交了一个新任务，那么这个空闲线程将会执行主线程提交的新任务，否则，这个空闲线程将被终止。由于空
+         * 闲60秒的空闲线程会被终止，因此长时间保持空闲的  CachedThreadPool是不会使用任何资源的。
+         * 根据前面的分析我们知道 SynchronousQueue是一个没有容量的阻塞队列（其实个人认为是相对应时间而已的没有
+         * 容量，因为时间到空闲线程就会被移除）。每个插入操作必须等到一个线程与之对应。 CachedThreadPool使用
+         * SynchronousQueue，把主线程的任务传递给空闲线程执行。流程如下：图：CachedThreadPoolliucheng
+         *
+         */
+
+        ExecutorService executorService1 = Executors.newCachedThreadPool();
+        for (int j = 0;j<10;j++){
+            executorService1.execute(new MyTestRunable());
+        }
+
+        /**
+         * SingleThreadExecutor
+         * SingleThreadExecutor模式只会创建一个线程。它和FixedThreadPool比较类似，不过线程数是一个。如果多
+         * 个任务被提交给SingleThreadExecutor的话，那么这些任务会被保存在一个队列中，并且会按照任务提交的顺序
+         * ，一个先执行完成再执行另外一个线程。SingleThreadExecutor模式可以保证只有一个任务会被执行。这种特点
+         * 可以被用来处理共享资源的问题而不需要考虑同步的问题。
+         * public static ExecutorService newSingleThreadExecutor() {
+         *         return new FinalizableDelegatedExecutorService
+         *             (new ThreadPoolExecutor(1, 1,
+         *                                     0L, TimeUnit.MILLISECONDS,
+         *                                     new LinkedBlockingQueue<Runnable>()));
+         *     }
+         * 从静态方法可以看出SingleThreadExecutor的corePoolSize和maximumPoolSize被设置为1，其他参数则与
+         * FixedThreadPool相同。SingleThreadExecutor使用的工作队列也是无界队列LinkedBlockingQueue。由于
+         * SingleThreadExecutor采用无界队列的对线程池的影响与FixedThreadPool一样，这里就不过多描述了。同样
+         * 的我们先来看看其运行流程：图：hdpi下：singlethreadexecutor
+         *  1）如果当前线程数少于corePoolSize即线程池中没有线程运行，则创建一个新的线程来执行任务。
+         * （2）在线程池的线程数量等于 corePoolSize时，将任务加入到LinkedBlockingQueue。
+         * （3）线程执行完成（1）中的任务后，会在一个无限循环中反复从 LinkedBlockingQueue获取任务来执行。
+         */
+
+        ExecutorService executorService2 = Executors.newSingleThreadExecutor();
+        for (int k = 0 ; k<5 ; k++){
+            executorService2.execute(new MyTestRunable());
+        }
+
+        /**
+         * 各自的适用场景
+         * FixedThreadPool：适用于为了满足资源管理需求，而需要限制当前线程的数量的应用场景，它适用于负载比较重的服务器。
+         * SingleThreadExecutor：适用于需要保证执行顺序地执行各个任务；并且在任意时间点，不会有多个线程是活动的场景。
+         * CachedThreadPool：大小无界的线程池，适用于执行很多的短期异步任务的小程序，或者负载较轻的服务器。
+         */
+
+        /**
+         * ScheduledThreadPoolExecutor浅析
+         * 3.1 ScheduledThreadPoolExecutor执行机制分析
+         * ScheduledThreadPoolExecutor继承自ThreadPoolExecutor。它主要用来在给定的延迟之后执行任务，或者定
+         * 期执行任务。 ScheduledThreadPoolExecutor的功能与Timer类似，但比Timer更强大，更灵活，Timer对应的
+         * 是单个后台线程，而 ScheduledThreadPoolExecutor可以在构造函数中指定多个对应的后台线程数。接下来我们
+         * 先来了解一下 ScheduledThreadPoolExecutor的运行机制：图：scheduledthreadpoolexecutor
+         * DelayQueue是一个无界队列，所以ThreadPoolExecutor的maximumPoolSize在 ScheduledThreadPoolExecutor
+         * 中无意义。 ScheduledThreadPoolExecutor的执行主要分为以下两个部分
+         * （1）当调用 ScheduledThreadPoolExecutor的scheduleAtFixedRate()方法或者scheduleWithFixedDelay()
+         * 方法时，会向 ScheduledThreadPoolExecutor的DelayQueue添加一个实现了RunnableScheduledFuture接口的
+         * ScheduleFutureTask。
+         * （2）线程池中的线程从DelayQueue中获取 ScheduleFutureTask，然后执行任务。
+         *
+         * 创建ScheduledThreadPoolExecutor:
+         * 1）ScheduledThreadPoolExecutor：可以执行并行任务也就是多条线程同时执行。
+         * （2）SingleThreadScheduledExecutor：可以执行单条线程。
+         *
+         * ScheduledThreadPoolExecutor和SingleThreadScheduledExecutor的适用场景
+         * ScheduledThreadPoolExecutor：适用于多个后台线程执行周期性任务，同时为了满足资源管理的需求而需要限制后台线程数量的应用场景。
+         * SingleThreadScheduledExecutor：适用于需要单个后台线程执行周期任务，同时需要保证任务顺序执行的应用场景。
+         *
+         * ScheduledThreadPoolExecutor使用案例
+         * 我们创建一个Runnable的对象，然后使用 ScheduledThreadPoolExecutor的 Scheduled()来执行延迟任务，输出执行时间即可:
+         * 我们先来介绍一下该类延迟执行的方法：public ScheduledFuture<?> schedule(Runnable command,long delay, TimeUnit unit);
+         * 参数解析：
+         * command：就是一个实现Runnable接口的类
+         * delay：延迟多久后执行。
+         * unit： 用于指定keepAliveTime参数的时间单位，这是一个枚举，常用的有TimeUnit.MILLISECONDS(毫秒)，
+         * TimeUnit.SECONDS(秒)以及TimeUnit.MINUTES(分钟)等。
+         * 这里要注意这个方法会返回ScheduledFuture实例，可以用于获取线程状态信息和延迟时间。
+         */
+
+        ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(3);
+        for (int r = 0 ; r<5;r++){
+            //延时十秒执行
+            scheduledExecutorService.schedule(new MyTestRunable(),10,TimeUnit.SECONDS);
+            // 设定可以循环执行的runnable,初始延迟为0，这里设置的任务的间隔为5秒
+            /**
+             * scheduleWithFixedDelay方法的作用是预定在初始的延迟结束后周期性地执行给定任务，在一次调用完成和
+             * 下一次调用开始之间有长度为delay的延迟， 其中initialDelay为初始延迟（简单说是是等上一个任务结束后
+             * ，在等固定的时间，然后执行。即：执行完上一个任务后再执行）。
+             */
+            scheduledExecutorService.scheduleAtFixedRate(new MyTestRunable(),0,5,TimeUnit.SECONDS);
+        }
     }
 }
