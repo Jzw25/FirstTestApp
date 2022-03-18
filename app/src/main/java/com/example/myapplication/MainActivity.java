@@ -3,10 +3,10 @@ package com.example.myapplication;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -16,9 +16,7 @@ import com.bumptech.glide.Glide;
 import com.example.myapplication.activity.JavaTestActivity;
 import com.example.myapplication.activity.TestSheJiActivity;
 import com.example.myapplication.bean.SuccessBean;
-import com.example.myapplication.databinding.ActivityMainBinding;
 import com.example.myapplication.media.MediaActivity;
-import com.example.myapplication.media.SoundPoolActivity;
 import com.example.myapplication.observer.CustomObserver;
 import com.example.myapplication.observer.LoginObserver;
 import com.example.myapplication.shujujiegou.AnnularLinkedList;
@@ -26,42 +24,25 @@ import com.example.myapplication.shujujiegou.DoubleLinkedList;
 import com.example.myapplication.shujujiegou.LinkedList;
 import com.example.myapplication.shujujiegou.StringTask;
 import com.example.myapplication.shujujiegou.TestTask;
-import com.google.gson.Gson;
 
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.annotations.NonNull;
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.Observer;
-import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.functions.Function;
-import io.reactivex.rxjava3.schedulers.Schedulers;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Cookie;
-import okhttp3.CookieJar;
 import okhttp3.FormBody;
-import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements GestureDetector.OnGestureListener {
 
     private static final String TAG = "MainActivity";
 
@@ -77,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
 
     private String path = "https://image.baidu.com/search/detail?ct=503316480&z=undefined&tn=baiduimagedetail&ipn=d&word=%E5%8A%A0%E8%BD%BD%E4%B8%AD%E5%9B%BE%E7%89%87&step_word=&ie=utf-8&in=&cl=2&lm=-1&st=undefined&hd=undefined&latest=undefined&copyright=undefined&cs=696136924,102362054&os=3827820665,1437801368&simid=696136924,102362054&pn=2&rn=1&di=128260&ln=1567&fr=&fmq=1639211046737_R&fm=&ic=undefined&s=undefined&se=&sme=&tab=0&width=undefined&height=undefined&face=undefined&is=0,0&istype=0&ist=&jit=&bdtype=0&spn=0&pi=0&gsm=0&objurl=https%3A%2F%2Fgimg2.baidu.com%2Fimage_search%2Fsrc%3Dhttp%253A%252F%252Fattach.bbs.miui.com%252Fforum%252F201804%252F17%252F102838j7mz7j3e67dep3hj.png%26refer%3Dhttp%253A%252F%252Fattach.bbs.miui.com%26app%3D2002%26size%3Df9999%2C10000%26q%3Da80%26n%3D0%26g%3D0n%26fmt%3Djpeg%3Fsec%3D1641803032%26t%3D9d7fa8af439db118a9a9fe7d0b12f69a&rpstart=0&rpnum=0&adpicid=0&nojc=undefined&dyTabStr=MCwzLDQsMSwyLDUsNiw3LDgsOQ%3D%3D";
 
+    private GestureDetector gestureDetector;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,9 +78,34 @@ public class MainActivity extends AppCompatActivity {
         btn_nbl = mainBinding.btnNbl;
         btn_goto = mainBinding.btnGoto;
         iv = findViewById(R.id.iv);
+        gestureDetector = new GestureDetector(this,this);
+        gestureDetector.setIsLongpressEnabled(true);
 
         mainBinding.btnJava.setOnClickListener(v -> {
             startActivity(new Intent(this, JavaTestActivity.class));
+        });
+
+        btn_goto.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                    return false;
+            }
+        });
+
+        /**
+         * 鼠标事件监听
+         */
+        btn_goto.setOnGenericMotionListener(new View.OnGenericMotionListener() {
+            @Override
+            public boolean onGenericMotion(View v, MotionEvent event) {
+                int actionIndex = event.getActionIndex();
+                int pointerId = event.getPointerId(actionIndex);
+                float y = event.getY(pointerId);
+                int action = event.getAction();
+                int actionMasked = event.getActionMasked();
+                int historySize = event.getHistorySize();
+                return false;
+            }
         });
 
         btn_goto.setOnClickListener(v -> {
@@ -327,7 +334,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 Glide.with(MainActivity.this).load(path).
-                        placeholder(getResources().getDrawable(R.mipmap.img))
+                        placeholder(getResources().getDrawable(R.mipmap.nimeng))
                         .error(getResources().getDrawable(R.mipmap.img_1))
                         .into(iv);
 
@@ -512,5 +519,55 @@ public class MainActivity extends AppCompatActivity {
 //            e.printStackTrace();
 //        }
 
+    }
+    // 用户轻触触摸屏，由1个MotionEvent ACTION_DOWN触发
+    @Override
+    public boolean onDown(MotionEvent e) {
+        return false;
+    }
+    /*
+     * 用户轻触触摸屏，尚未松开或拖动，由一个1个MotionEvent ACTION_DOWN触发
+     * 注意和onDown()的区别，强调的是没有松开或者拖动的状态
+     *
+     * 而onDown也是由一个MotionEventACTION_DOWN触发的，但是他没有任何限制，
+     * 也就是说当用户点击的时候，首先MotionEventACTION_DOWN，onDown就会执行，
+     * 如果在按下的瞬间没有松开或者是拖动的时候onShowPress就会执行，如果是按下的时间超过瞬间
+     * （这块我也不太清楚瞬间的时间差是多少，一般情况下都会执行onShowPress），拖动了，就不执行onShowPress。
+     */
+    @Override
+    public void onShowPress(MotionEvent e) {
+
+    }
+// 用户（轻触触摸屏后）松开，由一个1个MotionEvent ACTION_UP触发
+    // 轻击一下屏幕，立刻抬起来，才会有这个触发
+    // 从名子也可以看出,一次单独的轻击抬起操作,当然,如果除了Down以外还有其它操作,那就不再算是Single操作了,所以这个事件 就不再响应
+    @Override
+    public boolean onSingleTapUp(MotionEvent e) {
+        return false;
+    }
+    // 用户按下触摸屏，并拖动，由1个MotionEvent ACTION_DOWN, 多个ACTION_MOVE触发
+    @Override
+    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+        return false;
+    }
+    // 用户长按触摸屏，由多个MotionEvent ACTION_DOWN触发
+    @Override
+    public void onLongPress(MotionEvent e) {
+
+    }
+    // 用户按下触摸屏、快速移动后松开，由1个MotionEvent ACTION_DOWN, 多个ACTION_MOVE, 1个ACTION_UP触发
+    @Override
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        return false;
+    }
+
+    /**
+     * 重写Activity的onTouchEvent，把onTouchEvent托管给手势类
+     * @param event
+     * @return
+     */
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        return gestureDetector.onTouchEvent(event);
     }
 }

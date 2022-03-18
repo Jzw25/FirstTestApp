@@ -20,6 +20,8 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -32,12 +34,62 @@ import java.util.List;
 public class MainActivity2 extends AppCompatActivity {
 
     private AppBarConfiguration appBarConfiguration;
-private ActivityMain2Binding binding;
+    private ActivityMain2Binding binding;
+
+    private GestureDetector detector;
+
+
+    /**
+     * 不强制实现所有方法，选择实现
+     */
+    GestureDetector.SimpleOnGestureListener listener = new GestureDetector.SimpleOnGestureListener(){
+        //双击
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+            return super.onDoubleTap(e);
+        }
+
+        //单击
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            return super.onSingleTapConfirmed(e);
+        }
+
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            return super.onFling(e1, e2, velocityX, velocityY);
+        }
+    };
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        return detector.onTouchEvent(event);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        detector = new GestureDetector(this,listener);
+        //双击事件监听
+        detector.setOnDoubleTapListener(new GestureDetector.OnDoubleTapListener() {
+            //单击事件
+            @Override
+            public boolean onSingleTapConfirmed(MotionEvent e) {
+                return false;
+            }
+
+            //双击事件
+            @Override
+            public boolean onDoubleTap(MotionEvent e) {
+                return false;
+            }
+
+            @Override
+            public boolean onDoubleTapEvent(MotionEvent e) {
+                return false;
+            }
+        });
      binding = ActivityMain2Binding.inflate(getLayoutInflater());
      setContentView(binding.getRoot());
 

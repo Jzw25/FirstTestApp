@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- 设置居中显示-->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="居中显示"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:textSize="18sp"
+        />
+    <!-- 设置居中便宜，先居中显示后添加layout_constraintHorizontal_bias赋一个范围为 0-1 的值，假如赋值为0，则TextView1在布局的最左侧，假如赋值为1，则TextView1在布局的最右侧，假如假如赋值为0.5，则水平居中-->
+    <TextView
+        android:id="@+id/tvtop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="设置偏移"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHorizontal_bias="0.8"
+        android:textSize="18sp"
+        />
+<!--使用wrap_content，让控件自己计算大小
+当控件的高度或宽度为wrap_content时，可以使用下列属性来控制最大、最小的高度或宽度：
+android:minWidth 最小的宽度
+android:minHeight 最小的高度
+android:maxWidth 最大的宽度
+android:maxHeight 最大的高度 -->
+    <TextView
+        android:id="@+id/tv_one"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="控制大小"
+        app:layout_constraintTop_toBottomOf="@+id/tvtop"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:textSize="18sp"
+        android:minHeight="30dp"
+        android:minWidth="30dp"
+        android:maxHeight="100dp"
+        android:maxWidth="200dp"
+        />
+
+    <!--宽高比
+当宽或高至少有一个尺寸被设置为0dp时，可以通过属性layout_constraintDimensionRatio设置宽高比 -->
+    <TextView
+        android:id="@+id/tv_two"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:text="宽高比"
+        app:layout_constraintTop_toBottomOf="@+id/tv_one"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:textSize="18sp"
+        app:layout_constraintDimensionRatio="2:1"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="@+id/tv_two"
+        android:text="baseline"
+        app:layout_constraintBaseline_toBaselineOf="@+id/tv_two"
+        android:textSize="18sp"
+        />
+<!--角度定位指的是可以用一个角度和一个距离来约束两个空间的中心app:layout_constraintCircle="@+id/TextView1"
+app:layout_constraintCircleAngle="120"（角度）
+app:layout_constraintCircleRadius="150dp"（距离） -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="角度"
+        android:textSize="18sp"
+        app:layout_constraintCircle="@id/tv_two"
+        app:layout_constraintCircleAngle="120"
+        app:layout_constraintCircleRadius="100dp"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

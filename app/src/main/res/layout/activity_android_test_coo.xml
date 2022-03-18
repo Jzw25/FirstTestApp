@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.AndroidTestCooActivity">
+
+    <!-- AppBarLayout 中的 View，如要想要滚动到屏幕外，必须设置以下属性：app:layout_scrollFlags="scroll"
+    除了 scroll，还有下面几个取值，这些属性都必须与 scroll 一起使用 “|” 运算符。
+enterAlways：与 scroll 类似（scroll|enterAlways），只不过向下滚动先显示 AppBarLayout 到完全，再滚动 Scrolling View。
+enterAlwaysCollapsed：需要和 enterAlways 一起使用（scroll|enterAlways|enterAlwaysCollapsed），和 enterAlways
+不一样的是，不会显示 AppBarLayout 到完全再滚动 Scrolling View，而是先滚动 AppBarLayout 到最小高度，再滚动
+Scrolling View，最后再滚动 AppBarLayout 到完全显示。
+注意：需要定义 View 的最小高度（minHeight）才有效果：
+android:minHeight="10dp"
+app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"
+exitUntilCollapsed：顾名思义，定义了 AppBarLayout 消失的规则。发生向上滚动事件时，AppBarLayout 向上滚动退出直至最小高度（minHeight），然后 Scrolling View 开始滚动。也就是，AppBarLayout 不会完全退出屏幕。
+android:minHeight="10dp"
+app:layout_scrollFlags="scroll|exitUntilCollapsed"-->
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="标题"
+            android:layout_gravity="center"
+            android:textSize="22sp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:textColor="#E61155"
+            app:layout_scrollFlags="scroll"
+            />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrolllview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+        >
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textSize="30sp"
+            android:gravity="center_horizontal"
+            />
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
