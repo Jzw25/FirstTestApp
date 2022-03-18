@@ -139,7 +139,8 @@ public class HookTets {
             //需要替换的类，与原数据类都是实现相同接口
             MyHookBean.MyHookTwo myHookTwo = new MyHookBean.MyHookTwo();
             //配置代理
-            Object proxyInstance = Proxy.newProxyInstance(MyHookBean.MyHookTwo.class.getClassLoader(), MyHookBean.MyHookTwo.class.getInterfaces(), new InvocationHandler() {
+            Object proxyInstance = Proxy.newProxyInstance(MyHookBean.MyHookTwo.class.getClassLoader(),
+                    MyHookBean.MyHookTwo.class.getInterfaces(), new InvocationHandler() {
                 @Override
                 public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
                     Log.d(HookBean.TAG, "tryProxyTest: 代理了！");

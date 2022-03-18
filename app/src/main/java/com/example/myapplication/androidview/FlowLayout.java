@@ -1,10 +1,13 @@
 package com.example.myapplication.androidview;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.example.myapplication.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -140,6 +143,31 @@ public class FlowLayout extends ViewGroup {
    @Override
    protected void onDraw(Canvas canvas) {
       super.onDraw(canvas);
+   }
+
+   /**
+    * 自定义layoutparams
+    */
+   public static class FlowLayoutParams extends MarginLayoutParams{
+
+      public FlowLayoutParams(Context c, AttributeSet attrs) {
+         super(c, attrs);
+         TypedArray typedArray = c.obtainStyledAttributes(attrs, R.styleable.FlowLayout);
+         int anInt = typedArray.getInt(R.styleable.FlowLayout_position, 0);
+         typedArray.recycle();
+      }
+
+      public FlowLayoutParams(int width, int height) {
+         super(width, height);
+      }
+
+      public FlowLayoutParams(MarginLayoutParams source) {
+         super(source);
+      }
+
+      public FlowLayoutParams(LayoutParams source) {
+         super(source);
+      }
    }
 
 }

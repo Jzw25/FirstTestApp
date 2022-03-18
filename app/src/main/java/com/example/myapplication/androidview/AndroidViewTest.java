@@ -11,4 +11,8 @@ public class AndroidViewTest {
     * 里面是一个linearlayout。photowindow是window实现类，dectorview就是与之绑定的。viewroot是连接器，实现viewrootlmpl
     * 连接 WindowManager（实现类 WindowManagerImpl） 和 DecorView；完成 View 的绘制流程（measure/layout/draw）
     */
+
+    /**
+     * view的事件分发机制，在hdpi下viewshijianfengfa
+     */
 }
