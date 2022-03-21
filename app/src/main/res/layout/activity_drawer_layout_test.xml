@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.DrawerLayoutTestActivity"
+    android:id="@+id/drl"
+    >
+    <Button
+        android:id="@+id/btn"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:text="点击"
+        />
+    <!--android:gravity="start|left" 必须定义，此为左边弹出也可以定义为右边，不定义收回时报错 -->
+    <LinearLayout
+        android:layout_width="320dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="start|left"
+        >
+        <ImageView
+            android:layout_width="320dp"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/nvheard"
+            android:scaleType="fitXY"
+            />
+
+        <ListView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+
+    </LinearLayout>
+
+
+
+</androidx.drawerlayout.widget.DrawerLayout>
