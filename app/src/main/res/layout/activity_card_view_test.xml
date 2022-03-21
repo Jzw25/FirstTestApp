@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.CardViewTestActivity">
+
+    <!--1、cardBackgroundColor 设置背景色
+
+CardView是View的子类，View一般使用Background设置背景色，为什么还要单独提取出一个属性让我们来设置背景色呢？
+
+为了实现阴影效果，内部已经消耗掉了 Background 属性
+
+2、cardCornerRadius 设置圆角半径
+
+3、contentPadding 设置内部padding
+
+View提供了padding设置间距，为什么还要单独提取出一个属性？
+
+相同的原因，内部消耗掉了 padding 属性
+
+4、cardElevation 设置阴影大小
+
+5、cardUseCompatPadding
+
+默认为false，用于5.0及以上，true则添加额外的 padding 绘制阴影
+
+6、cardPreventCornerOverlap -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="240dp"
+        android:layout_height="150dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:cardBackgroundColor="#B5515E"
+        app:cardCornerRadius="8dp"
+        android:elevation="4dp"
+        >
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:scaleType="fitXY"
+            android:src="@mipmap/yintao"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:text="123456"
+
+            />
+
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
