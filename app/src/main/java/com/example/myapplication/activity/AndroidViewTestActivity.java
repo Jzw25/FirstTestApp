@@ -4,6 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.content.Context;
+import android.content.res.AssetManager;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
@@ -17,6 +20,8 @@ import com.example.myapplication.R;
 import com.example.myapplication.adapter.MyViewPage2Adapter;
 import com.example.myapplication.databinding.ActivityAndroidViewTestBinding;
 import com.google.android.material.snackbar.Snackbar;
+
+import java.lang.reflect.Method;
 
 public class AndroidViewTestActivity extends AppCompatActivity {
     private ActivityAndroidViewTestBinding binding;
@@ -107,5 +112,45 @@ public class AndroidViewTestActivity extends AppCompatActivity {
         textView.setTextColor(Color.parseColor("#ed52fb"));
         snackbar.setActionTextColor(Color.parseColor("#ff52fb"));
         snackbar.show();
+    }
+    /**
+     * 另外getSystemService()是Android很重要的一个API，它是Activity的一个方法，根据传入的NAME来取得对应的Object，然后转换成相应的服务对象。以下介绍系统相应的服务。
+     *
+     * 传入的Name 	返回的对象	说明
+     * WINDOW_SERVICE	WindowManager	管理打开的窗口程序
+     * LAYOUT_INFLATER_SERVICE	LayoutInflater	取得xml里定义的view
+     * ACTIVITY_SERVICE	ActivityManager	管理应用程序的系统状态
+     * POWER_SERVICE	PowerManger	电源的服务
+     * ALARM_SERVICE	AlarmManager	闹钟的服务
+     * NOTIFICATION_SERVICE	NotificationManager	状态栏的服务
+     * KEYGUARD_SERVICE	KeyguardManager	键盘锁的服务
+     * LOCATION_SERVICE	LocationManager	位置的服务，如GPS
+     * SEARCH_SERVICE	SearchManager	搜索的服务
+     * VEBRATOR_SERVICE	Vebrator	手机震动的服务
+     * CONNECTIVITY_SERVICE	Connectivity	网络连接的服务
+     * WIFI_SERVICE	WifiManager	Wi-Fi服务
+     * TELEPHONY_SERVICE	TeleponyManager	电话服务
+     */
+
+    /**
+     * 获取resources的方法
+     * @param context
+     */
+    private void testResource(Context context){
+        Resources resources = context.getResources();
+        //获取其他apk的resouces，可用于换肤皮肤包
+        String mDexPath = "";//apk路径
+        try {
+            AssetManager assetManager = AssetManager.class.newInstance();
+            Method addAssetPath = assetManager.getClass().getMethod("addAssetPath", String.class);
+
+            addAssetPath.invoke(assetManager, mDexPath);
+            Resources currentRes = context.getResources();
+            Resources mResources = new Resources(assetManager, currentRes.getDisplayMetrics(),
+                    currentRes.getConfiguration());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 }

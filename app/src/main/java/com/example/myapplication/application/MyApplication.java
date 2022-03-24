@@ -4,12 +4,21 @@ import android.app.Application;
 import android.os.Build;
 import android.webkit.WebView;
 
+import androidx.lifecycle.ProcessLifecycleOwner;
+
+import com.example.myapplication.observer.MyApplicationObserver;
+
 public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
         // 修復WebView的多進程加載的bug
         initWebView();
+        initLifeCcle();
+    }
+
+    private void initLifeCcle() {
+        ProcessLifecycleOwner.get().getLifecycle().addObserver(new MyApplicationObserver());
     }
 
     /**
