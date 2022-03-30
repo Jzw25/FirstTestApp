@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/ASma/FirstTestApp/app/src/main/res/drawable/ic_launcher_background.xml" value="0.211" />
         <entry key="..\:/ASma/FirstTestApp/app/src/main/res/layout/activity_android_test_coo.xml" value="0.1" />
         <entry key="..\:/ASma/FirstTestApp/app/src/main/res/layout/activity_android_test_coo2.xml" value="0.20364583333333333" />
         <entry key="..\:/ASma/FirstTestApp/app/src/main/res/layout/activity_android_test_view2.xml" value="0.20364583333333333" />
@@ -14,13 +15,20 @@
         <entry key="..\:/ASma/FirstTestApp/app/src/main/res/layout/activity_java_test.xml" value="0.25" />
         <entry key="..\:/ASma/FirstTestApp/app/src/main/res/layout/activity_livedata_test.xml" value="0.20364583333333333" />
         <entry key="..\:/ASma/FirstTestApp/app/src/main/res/layout/activity_main.xml" value="0.20364583333333333" />
+        <entry key="..\:/ASma/FirstTestApp/app/src/main/res/layout/activity_main2.xml" value="0.11730072463768115" />
+        <entry key="..\:/ASma/FirstTestApp/app/src/main/res/layout/activity_navigation_fragment.xml" value="0.25" />
         <entry key="..\:/ASma/FirstTestApp/app/src/main/res/layout/activity_navigation_view_test.xml" value="0.33" />
+        <entry key="..\:/ASma/FirstTestApp/app/src/main/res/layout/activity_test_mvvm.xml" value="0.20364583333333333" />
         <entry key="..\:/ASma/FirstTestApp/app/src/main/res/layout/activity_test_she_ji.xml" value="0.17074275362318841" />
         <entry key="..\:/ASma/FirstTestApp/app/src/main/res/layout/activity_web_view.xml" value="0.11730072463768115" />
+        <entry key="..\:/ASma/FirstTestApp/app/src/main/res/layout/content_main.xml" value="0.1" />
         <entry key="..\:/ASma/FirstTestApp/app/src/main/res/layout/fragment_blank_one.xml" value="0.11730072463768115" />
         <entry key="..\:/ASma/FirstTestApp/app/src/main/res/layout/fragment_blank_two.xml" value="0.20364583333333333" />
+        <entry key="..\:/ASma/FirstTestApp/app/src/main/res/layout/fragment_first.xml" value="0.11730072463768115" />
+        <entry key="..\:/ASma/FirstTestApp/app/src/main/res/layout/fragment_second.xml" value="0.11730072463768115" />
         <entry key="..\:/ASma/FirstTestApp/app/src/main/res/layout/layout.xml" value="0.22" />
         <entry key="..\:/ASma/FirstTestApp/app/src/main/res/layout/nvheard.xml" value="0.11730072463768115" />
+        <entry key="..\:/ASma/FirstTestApp/app/src/main/res/menu/navigationfragmentmenu.xml" value="0.20364583333333333" />
         <entry key="..\:/ASma/FirstTestApp/app/src/main/res/menu/navigationviewmenu.xml" value="0.33" />
         <entry key="..\:/ASma/FirstTestApp/app/src/main/res/menu/toolbarnemu.xml" value="0.5" />
         <entry key="..\:/Users/1/AndroidStudioProjects/MyApplication2/app/src/main/res/layout/activity_main.xml" value="0.21784420289855072" />

@@ -1,4 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- 属性	作用
+app:destination"@+id/loginFragment"	跳转完成到达的fragment的Id
+app:popUpTo="@id/home_dest"	将 fragment 从栈中弹出，直到某个 Id 的 fragment
+app:popUpToInclusive="true/false"	弹出栈是否包含目标
+app:launchSingleTop="true/false"	是否开启singleTop模式
+argument 标签
+
+属性	作用
+android:name	标签名字
+app:argType	标签的类型
+android:defaultValue	默认值
+
+下面是 navigation 标签的属性：
+
+属性	解释
+app:startDestination	默认的起始位置
+
+下面是 fragment 标签的属性：
+
+属性	解释
+name	表示所属的 fragment 类
+action	destination 属性用于指定下一个目标 fragment、进入退出动画等
+argument	用于传递数据
+
+-->
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -14,6 +39,21 @@
         <action
             android:id="@+id/action_FirstFragment_to_SecondFragment"
             app:destination="@id/SecondFragment" />
+        <argument
+            android:name="age"
+            app:argType="int"
+            android:defaultValue="18"
+            />
+        <argument
+            android:name="name"
+            app:argType="String"
+            android:defaultValue="noname"
+            />
+        <argument
+            android:name="id"
+            app:argType="int"
+            android:defaultValue="0000"
+            />
     </fragment>
     <fragment
         android:id="@+id/SecondFragment"
@@ -25,4 +65,6 @@
             android:id="@+id/action_SecondFragment_to_FirstFragment"
             app:destination="@id/FirstFragment" />
     </fragment>
+
+
 </navigation>

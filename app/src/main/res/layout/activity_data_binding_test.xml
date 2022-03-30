@@ -15,6 +15,9 @@
         <variable
             name="itemhandle"
             type="com.example.myapplication.bean.DataBindingTestVo.ItemEventHandler" />
+        <variable
+            name="imagevo"
+            type="com.example.myapplication.bean.ImageViewBean" />
     </data>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
 
@@ -43,6 +46,7 @@
         />
 
     <Button
+        android:id="@+id/btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -53,15 +57,43 @@
         android:onClick="@{testvo.clickOne}"
         />
     <Button
+        android:id="@+id/btn1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn"
         android:text="@{testvo.name}"
         android:onClick="@{(view)->itemhandle.clickTitle}"
-        android:layout_marginTop="100dp"
+        />
+    <TextView
+        android:id="@+id/tv1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn1"
+        android:text="@{`这是TextView...`}"
+        />
+
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:scaleType="fitXY"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/btn"
+        app:imageUrl="@{imagevo.url}"
+        app:error="@{imagevo.error}"
+        app:placeholder="@{imagevo.placeholder}"
+        />
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv1"
+        android:background="@{true ? @color/colorRed : @color/colorBlue}"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
