@@ -18,6 +18,9 @@
         android:theme="@style/Theme.MyApplication"
         tools:ignore="MissingClass">
         <activity
+            android:name=".activity.DataBindingTestActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.LivedataTestActivity"
             android:exported="false" />
         <activity
