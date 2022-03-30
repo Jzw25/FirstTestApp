@@ -18,6 +18,12 @@
         android:theme="@style/Theme.MyApplication"
         tools:ignore="MissingClass">
         <activity
+            android:name=".activity.NavigationFragmentActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.TestMvvmActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.DataBindingTestActivity"
             android:exported="false" />
         <activity

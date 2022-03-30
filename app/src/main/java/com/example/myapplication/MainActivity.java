@@ -16,6 +16,7 @@ import com.bumptech.glide.Glide;
 import com.example.myapplication.activity.JavaTestActivity;
 import com.example.myapplication.activity.TestSheJiActivity;
 import com.example.myapplication.bean.SuccessBean;
+import com.example.myapplication.databinding.ActivityMainBinding;
 import com.example.myapplication.media.MediaActivity;
 import com.example.myapplication.observer.CustomObserver;
 import com.example.myapplication.observer.LoginObserver;

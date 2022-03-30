@@ -2,6 +2,8 @@ plugins {
     id 'com.android.application'
 }
 apply plugin: 'me.ele.lancet'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'androidx.navigation.safeargs'
 
 android {
     compileSdk 31

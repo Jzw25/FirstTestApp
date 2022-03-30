@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.NavigationFragmentActivity">
+
+    <!-- 属性	解释
+android:name	值必须是androidx.navigation.fragment.NavHostFragment，声明这是一个 NavHostFragment，表示这是一个可以切换 fragment 的控件
+app:navGraph	指定上面的导航意图文件login_navigation.xml ，也就是确定了 Navigation Graph
+app:defaultNavHost="true"	表示是否拦截返回键，默认为 false, 假如页面处于第二个 fragment，这时按下返回键，会退出当前 activity 而不是回到上一个fragment。true 则反之
+-->
+    <fragment
+        android:id="@+id/nav_host_fragment_content_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        app:navGraph = "@navigation/nav_graph"
+        app:defaultNavHost = "true"
+        />
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bnv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:menu="@menu/navigationfragmentmenu"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -27,7 +27,12 @@ private FragmentSecondBinding binding;
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        Bundle bundle = getArguments();
+        if(bundle!=null){
+            FirstFragmentArgs firstFragmentArgs = FirstFragmentArgs.fromBundle(bundle);
+            int age = firstFragmentArgs.getAge();
+            int id = firstFragmentArgs.getId();
+        }
         binding.buttonSecond.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
