@@ -34,7 +34,7 @@ private FragmentFirstBinding binding;
                 /**
                  * safeargs数据传递，先在navigationxml下定义agments，然后在写如下代码
                  */
-                FirstFragmentArgs build = new FirstFragmentArgs.Builder().setAge(22).setId(10).build();
+                FirstFragmentArgs build = new FirstFragmentArgs.Builder().setAge(22).setId(10).setName("hh").build();
                 Bundle bundle = build.toBundle();
                 NavHostFragment.findNavController(FirstFragment.this)
                         .navigate(R.id.action_FirstFragment_to_SecondFragment,bundle);

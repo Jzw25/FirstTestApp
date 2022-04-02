@@ -41,17 +41,17 @@ argument	用于传递数据
             app:destination="@id/SecondFragment" />
         <argument
             android:name="age"
-            app:argType="int"
+            app:argType="integer"
             android:defaultValue="18"
             />
         <argument
             android:name="name"
-            app:argType="String"
+            app:argType="string"
             android:defaultValue="noname"
             />
         <argument
             android:name="id"
-            app:argType="int"
+            app:argType="integer"
             android:defaultValue="0000"
             />
     </fragment>
