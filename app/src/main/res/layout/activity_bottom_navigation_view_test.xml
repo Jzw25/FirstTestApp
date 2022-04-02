@@ -12,7 +12,6 @@
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:menu="@menu/navigationviewmenu"
-        app:itemBackground="#ff00ff"
         app:itemIconTint="@null"
         app:itemTextColor="@color/black"
         />
