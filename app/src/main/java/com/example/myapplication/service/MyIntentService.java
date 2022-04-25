@@ -47,6 +47,29 @@ public class MyIntentService extends IntentService {
     //根据intent实现耗时操作
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
+        //调用此service时传入的意图对象
+        int key = intent.getIntExtra("key", 0);
+        String value = intent.getStringExtra("value");
+        switch (key) {
+            case 1:
+                //模拟耗时任务1
+                try {
+                    Thread.sleep(3 * 1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case 2:
+                //模拟耗时任务1
+                try {
+                    Thread.sleep(3 * 1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                break;
+            default:
+                break;
+        }
 
     }
 }

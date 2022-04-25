@@ -18,6 +18,9 @@
         android:theme="@style/Theme.MyApplication"
         tools:ignore="MissingClass">
         <activity
+            android:name=".activity.TestFramrworkActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.WorkManagerTestActivity"
             android:exported="false" />
         <activity
