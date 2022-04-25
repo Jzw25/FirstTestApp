@@ -24,6 +24,13 @@ public class DataBindingTestVo extends BaseObservable {
     private String id;
     private String age;
 
+    /**
+     * 构造代码块，调用构造函数时会被调用
+     */
+    {
+
+    }
+
     @Bindable
     public String getName() {
         return name;

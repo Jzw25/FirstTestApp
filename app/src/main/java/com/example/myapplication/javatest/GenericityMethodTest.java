@@ -132,6 +132,14 @@ public class GenericityMethodTest<T> {
          * 类比数组，尽管你可以把Apple[]向上转型成Fruit[]，然而往里面添加Fruit和Orange等对象都是非法的，会在
          * 运行时抛出ArrayStoreException异常。泛型把类型检查移到了编译期，协变过程丢掉了类型信息，编译器拒绝
          * 所有不安全的操作。
+         *
+         *
+         * 在testExtends方法中，因为泛型中用的是extends，在向list中存放元素的时候，我们并不能确定List中的元素的具体类型，
+         * 即可能是Apple也可能是Banana。因此调用add方法时，不论传入new Apple()还是new Banana()，都会出现编译错误。
+         *
+         * 理解了extends之后，再看super就很容易理解了，即我们不能确定testSuper方法的参数中的泛型是Fruit的哪个父类，
+         * 因此在调用get方法时只能返回Object类型。结合extends可见，在获取泛型元素时，使用extends获取到的是泛型中的
+         * 上边界的类型(本例子中为Fruit),范围更小。
          */
         List<? super Man> listst = new ArrayList<>();
 
@@ -139,9 +147,10 @@ public class GenericityMethodTest<T> {
         Man man = list.get(0);
         Person person = list.get(0);
 
-        //
+        //add的时候只能addsupre定义的类或者其子类，在初始化的时候添加就是原本的定义，只能是其类或者其父类
         listst.add(new Man());
         listst.add(new SmallMan());
+        Object object = listst.get(0);
 
     }
 

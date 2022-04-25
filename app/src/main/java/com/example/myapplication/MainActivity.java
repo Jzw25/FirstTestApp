@@ -1,11 +1,16 @@
 package com.example.myapplication;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -570,5 +575,26 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         return gestureDetector.onTouchEvent(event);
+    }
+
+    /**
+     * xml加载布局，首先有一个trycreateview去尝试创建view，此为留口，我们可以通过实现getLayoutInflater().setFactory2
+     * 实现自定义的Factory2，再onCreateView中返回具体的view，就拦截了系统加载view的过程，就不会往下走到oncreteview中
+     * 去反射创建view了
+     */
+    private void changeSkin(){
+        getLayoutInflater().setFactory2(new LayoutInflater.Factory2() {
+            @Nullable
+            @Override
+            public View onCreateView(@Nullable View parent, @NonNull String name, @NonNull Context context, @NonNull AttributeSet attrs) {
+                return null;
+            }
+
+            @Nullable
+            @Override
+            public View onCreateView(@NonNull String name, @NonNull Context context, @NonNull AttributeSet attrs) {
+                return null;
+            }
+        });
     }
 }

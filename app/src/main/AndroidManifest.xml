@@ -39,6 +39,9 @@
             android:name=".activity.WebViewActivity"
             android:exported="false" />
         <activity
+            android:name=".activity.TabLayoutTestActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.CardViewTestActivity"
             android:exported="false" />
         <activity
