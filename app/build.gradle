@@ -128,5 +128,6 @@ dependencies {
 
     // optional - Jetpack Compose integration
     implementation "androidx.paging:paging-compose:1.0.0-alpha14"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:1.6.0"
 
 }

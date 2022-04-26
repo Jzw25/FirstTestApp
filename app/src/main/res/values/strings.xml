@@ -12,4 +12,6 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="name">aaa</string>
+    <string name="permission_name">我的自定义权限</string>
+    <string name="permission_dec">我的自定义权限描述</string>
 </resources>
