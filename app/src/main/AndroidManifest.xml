@@ -7,25 +7,28 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <!-- 如果您未在 <uses-feature> 声明中将 android:required 设置为 false，则 Android 会假定您的应用必须在
-    有该硬件的情况下才能运行。因此，系统会阻止某些设备安装您的应用。-->
-    <uses-feature android:name="android.hardware.camera"
-        android:required="false"/>
-
-    <!--自定义权限 protectionLevel 属性为必需项，用于指示系统如何向用户告知哪些应用正在请求权限或者谁可以获得该
+    <!--
+ 如果您未在 <uses-feature> 声明中将 android:required 设置为 false，则 Android 会假定您的应用必须在
+    有该硬件的情况下才能运行。因此，系统会阻止某些设备安装您的应用。
+    -->
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <!--
+自定义权限 protectionLevel 属性为必需项，用于指示系统如何向用户告知哪些应用正在请求权限或者谁可以获得该
     权限，如链接的文档中所述。android:permissionGroup 属性为可选项，仅用于帮助系统向用户显示权限。在大多数情况
     下，您应将其设置为标准系统组（在 android.Manifest.permission_group 中列出），但您也可以自行定义组。最好使
     用现有的组，因为这可以简化用户看到的权限界面。您需要为权限提供标签和说明。这些是用户在查看权限列表
     (android:label) 或有关单个权限的详细信息 (android:description) 时能够看到的字符串资源。标签应当简短，
     用几个词描述该权限所保护的关键功能。说明应该用几个句子描述权限允许权限获得者执行哪些操作。我们通常会使用包含
     两个句子的说明：第一句描述权限；第二句提醒用户在向应用授予权限后可能会出现哪类错误。
-     -->
-    <permission android:name="com.jzw.mypermission.permission.MYCHECKPERMISSION"
-        android:label="@string/permission_name"
+    -->
+    <permission
+        android:name="com.jzw.mypermission.permission.MYCHECKPERMISSION"
         android:description="@string/permission_dec"
+        android:label="@string/permission_name"
         android:permissionGroup="android.permission-group.COST_MONEY"
-        android:protectionLevel="dangerous"
-        />
+        android:protectionLevel="dangerous" />
 
     <application
         android:name=".application.MyApplication"
@@ -36,6 +39,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication"
         tools:ignore="MissingClass">
+        <activity
+            android:name=".activity.TestDaggerAndHiltActivity"
+            android:exported="false" />
         <activity
             android:name=".activity.TestFramrworkActivity"
             android:exported="false" />
@@ -96,8 +102,7 @@
         <activity
             android:name=".media.SoundPoolActivity"
             android:exported="false"
-            android:permission=".media.VedioViewActivity"
-            />
+            android:permission=".media.VedioViewActivity" />
         <activity
             android:name=".media.VedioViewActivity"
             android:exported="false" />
