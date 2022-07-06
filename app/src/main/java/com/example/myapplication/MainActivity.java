@@ -45,6 +45,7 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -420,15 +421,15 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
                 Retrofit retrofit = new Retrofit.Builder().addConverterFactory(GsonConverterFactory.create()).baseUrl("https://www.wanandroid.com/").build();
                 RetrofitServicee retrofitServicee = retrofit.create(RetrofitServicee.class);
 
-                retrofit2.Call<JSONObject> login = retrofitServicee.login("jzw111", "123123");
-                login.enqueue(new retrofit2.Callback<JSONObject>() {
+                retrofit2.Call<ResponseBody> login = retrofitServicee.login("jzw111", "123123");
+                login.enqueue(new retrofit2.Callback<ResponseBody>() {
                     @Override
-                    public void onResponse(retrofit2.Call<JSONObject> call, retrofit2.Response<JSONObject> response) {
+                    public void onResponse(retrofit2.Call<ResponseBody> call, retrofit2.Response<ResponseBody> response) {
                         Log.d(TAG, "onResponse: "+response.body().toString());
                     }
 
                     @Override
-                    public void onFailure(retrofit2.Call<JSONObject> call, Throwable t) {
+                    public void onFailure(retrofit2.Call<ResponseBody> call, Throwable t) {
                         Log.d(TAG, "onFailure: ");
                     }
                 });

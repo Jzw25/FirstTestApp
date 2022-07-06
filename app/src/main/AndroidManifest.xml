@@ -3,11 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.myapplication">
 
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.INTERNET" />
-
     <application
         android:name=".application.MyApplication"
         android:allowBackup="true"
@@ -17,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication"
         tools:ignore="MissingClass">
+        <activity
+            android:name=".activity.HttpTestActivity"
+            android:exported="false" />
         <activity
             android:name=".activity.TestFramrworkActivity"
             android:exported="false" />
@@ -110,5 +108,10 @@
             </intent-filter>
         </service>
     </application>
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
 </manifest>
