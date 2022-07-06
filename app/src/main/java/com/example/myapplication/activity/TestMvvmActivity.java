@@ -28,6 +28,7 @@ public class TestMvvmActivity extends AppCompatActivity {
                 binding.setBean(treeBean);
             }
         });
-        testMvvmViewModel.getLiveData();
+        //获取数据
+        testMvvmViewModel.getData();
     }
 }

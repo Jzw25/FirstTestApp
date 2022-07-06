@@ -5,9 +5,12 @@ import androidx.lifecycle.ViewModel;
 import androidx.paging.DataSource;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
+import androidx.paging.PagingSource;
 
 import com.example.myapplication.model.MyTreeFactory;
 import com.example.myapplication.model.TreeBean;
+
+import kotlin.jvm.functions.Function0;
 
 public class PageListViewModel extends ViewModel {
     private LiveData<PagedList<TreeBean>> liveData;
@@ -22,7 +25,7 @@ public class PageListViewModel extends ViewModel {
                     .setPrefetchDistance(200)
                     .setEnablePlaceholders(true)
                     .build();
-            liveData = new LivePagedListBuilder<>(dataSource,myPagingConfig).build();
+            liveData = new LivePagedListBuilder<Integer,TreeBean>((Function0<? extends PagingSource<Integer, TreeBean>>) dataSource,myPagingConfig).build();
         }
         return liveData;
     }
